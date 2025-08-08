@@ -44,4 +44,4 @@ cat ./pull-secret | jq . > config.json
 mv config.json ~/.docker/config.json
 tar xvzf mirror-registry-amd64.tar.gz
 sudo yum install podman
-Run command:  './mirror-registry install --quayHostname mirror.registry.com --quayRoot /home/ec2-user/openshift/registry --quayStorage /home/ec2-user/openshift/mirror-storage/'
+Run command:  './mirror-registry install --quayHostname <example hostname> --quayRoot /home/ec2-user/openshift/registry --quayStorage /home/ec2-user/openshift/mirror-storage/'
