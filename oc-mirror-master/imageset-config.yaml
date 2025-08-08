@@ -1,0 +1,11 @@
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.2
+      maxVersion: 4.19.2 
+    graph: true
+  additionalImages: 
+    - name: registry.redhat.io/ubi9/ubi:latest
