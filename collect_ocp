@@ -25,7 +25,7 @@ mv butane-amd64 downloads/
 tar -xvf downloads/mirror-registry-amd64.tar.gz -C mirror-registry/
 tar -xvf downloads/oc-mirror.tar.gz -C downloads/
 tar -xvf downloads/openshift-client-linux.tar.gz -C downloads/
-tar -xvf downloads/openshift-install-linux.tar.gz -C downloads/
+tar -xvf openshift-install-linux-4.19.2.tar.gz -C downloads/
 sudo cp downloads/oc-mirror /usr/local/bin/oc-mirror
 sudo chmod 744 /usr/local/bin/oc-mirror
 sudo cp downloads/oc /usr/local/bin/oc
