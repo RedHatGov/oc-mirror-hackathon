@@ -27,6 +27,6 @@ tar -xvf downloads/oc-mirror.tar.gz -C downloads/
 tar -xvf downloads/openshift-client-linux.tar.gz -C downloads/
 tar -xvf downloads/openshift-install-linux-4.19.2.tar.gz -C downloads/
 sudo cp downloads/oc-mirror /usr/local/bin/oc-mirror
-sudo chmod 744 /usr/local/bin/oc-mirror
+sudo chmod 755 /usr/local/bin/oc-mirror
 sudo cp downloads/oc /usr/local/bin/oc
 sudo cp downloads/openshift-install /usr/local/bin/openshift-install 
