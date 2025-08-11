@@ -1,0 +1,151 @@
+#==============================================================================
+# OpenShift ImageSet Configuration for Disconnected Installation
+#==============================================================================
+# Description: Comprehensive operator and image collection for air-gapped
+#              OpenShift deployments with organized operator categories
+# Version: 2.0
+# OpenShift Version: 4.19.2
+# Last Updated: $(date +%Y-%m-%d)
+#==============================================================================
+
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+
+# Archive configuration
+archiveSize: 20  # Size in GB for archive chunks
+
+mirror:
+  # OpenShift Platform Configuration
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.2
+      maxVersion: 4.19.2
+      type: ocp
+    graph: true  # Include upgrade graph data
+
+  # Operator Collections (Organized by Category)
+  operators:
+    #==========================================================================
+    # Red Hat Operator Index (v4.19) - Primary operator collection
+    #==========================================================================
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
+        
+        #======================================================================
+        # OBSERVABILITY & MONITORING
+        # Operators for logging, monitoring, tracing, and observability
+        #======================================================================
+        - name: cluster-logging              # Centralized logging with Fluentd/Vector
+        - name: cluster-observability-operator  # Observability stack management
+        - name: opentelemetry-product       # Distributed tracing and metrics collection
+        - name: loki-operator               # Log aggregation system
+        - name: tempo-product               # Distributed tracing backend
+        
+        #======================================================================
+        # SECURITY & COMPLIANCE
+        # Operators for security scanning, compliance, and identity management
+        #======================================================================
+        - name: rhacs-operator              # Red Hat Advanced Cluster Security
+        - name: compliance-operator         # Security compliance scanning (OpenSCAP)
+        - name: file-integrity-operator     # File system integrity monitoring
+        - name: security-profiles-operator  # Security context constraints management
+        - name: rhbk-operator               # Red Hat Build of Keycloak (Identity)
+        
+        #======================================================================
+        # CONTAINER REGISTRY & IMAGE MANAGEMENT
+        # Operators for container registries and image lifecycle
+        #======================================================================
+        - name: quay-operator               # Enterprise container registry
+        
+        #======================================================================
+        # CLUSTER LIFECYCLE & UPDATES
+        # Operators for cluster updates and lifecycle management
+        #======================================================================
+        - name: cincinnati-operator         # Update service for OpenShift clusters
+        
+        #======================================================================
+        # STORAGE & DATA MANAGEMENT
+        # Operators for persistent storage, backup, and data services
+        #======================================================================
+        - name: odf-operator                # OpenShift Data Foundation (Ceph-based)
+        - name: lvms-operator               # Logical Volume Manager Storage
+        - name: local-storage-operator      # Local persistent volume management
+        - name: odf-prometheus-operator     # Monitoring for ODF
+        - name: ocs-operator                # OpenShift Container Storage (legacy)
+        - name: mcg-operator                # Multi-Cloud Gateway for object storage
+        - name: odf-csi-addons-operator     # CSI driver add-ons for ODF
+        - name: ocs-client-operator         # Client for external storage clusters
+        - name: recipe                      # Storage recipe management
+        - name: rook-ceph-operator          # Ceph orchestration in Kubernetes
+        - name: cephcsi-operator            # Ceph CSI driver
+        - name: odf-dependencies            # Dependencies for OpenShift Data Foundation
+        - name: odr-cluster-operator        # Disaster recovery for clusters
+        - name: odr-hub-operator            # Disaster recovery hub management
+        
+        #======================================================================
+        # VIRTUALIZATION & MIGRATION
+        # Operators for virtual machines and workload migration
+        #======================================================================
+        - name: mtv-operator                # Migration Toolkit for Virtualization
+        - name: kubevirt-hyperconverged     # Virtual machine management stack
+        - name: vm-import-operator          # Virtual machine import from external sources
+        - name: virt-operator               # Core virtualization operator
+        - name: cdi-operator                # Containerized Data Importer for VMs
+        - name: ssp-operator                # Scheduling, Scale, and Performance for VMs
+        - name: hostpath-provisioner-operator  # Host path storage for VMs
+        
+        #======================================================================
+        # SERVICE MESH & NETWORKING
+        # Operators for service mesh, load balancing, and network management
+        #======================================================================
+        - name: servicemeshoperator         # Red Hat Service Mesh (Istio-based)
+        - name: servicemeshoperator3        # Service Mesh v3 (next generation)
+        - name: kiali-ossm                  # Service mesh observability console
+        - name: metallb-operator            # Load balancer for bare metal clusters
+        - name: kubernetes-nmstate-operator # Network configuration management
+        - name: cluster-network-addons-operator # Additional network features for VMs
+        
+        #======================================================================
+        # CI/CD & DEVELOPMENT TOOLS
+        # Operators for continuous integration and development workflows
+        #======================================================================
+        - name: tekton-tasks-operator       # Tekton pipeline tasks and resources
+    
+    #==========================================================================
+    # Certified Operator Index (v4.18) - Third-party certified operators
+    #==========================================================================
+    - catalog: registry.redhat.io/redhat/certified-operator-index:v4.18
+      packages:
+        
+        #======================================================================
+        # SECURITY & SECRETS MANAGEMENT
+        #======================================================================
+        - name: vault-secrets-operator     # HashiCorp Vault integration for secrets
+        
+        #======================================================================
+        # DATABASE MANAGEMENT
+        #======================================================================
+        - name: cloudnative-pg             # Cloud-native PostgreSQL operator
+    
+    #==========================================================================
+    # Community Operator Index (v4.18) - Community-maintained operators
+    #==========================================================================
+    - catalog: registry.redhat.io/redhat/community-operator-index:v4.18
+      packages:
+        
+        #======================================================================
+        # MONITORING & DASHBOARDS
+        #======================================================================
+        - name: grafana-operator           # Grafana dashboards and visualization
+
+  #============================================================================
+  # Additional Base Images
+  # Container images for applications and supporting services
+  #============================================================================
+  additionalImages:
+    # Base operating system images
+    - name: registry.access.redhat.com/ubi9/ubi:latest          # Universal Base Image 9    
+
+    # Custom security images
+    - name: ghcr.io/ckupe/rhbk-fips:latest                      # FIPS-compliant Keycloak build
