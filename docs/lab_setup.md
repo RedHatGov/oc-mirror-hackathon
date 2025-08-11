@@ -106,4 +106,46 @@ Log into your registry in a new web browser tab if you would like
 
 ### Lets run your first oc-mirror of ocp 4.19.2 
 
+> cd ~/oc-mirror-hackathon/oc-mirror-master/
 
+> ./oc-mirror.sh
+
+While this is running take some time to inspect the .cache .oc-mirror and other directories. The base v2 docs are below. We will spend quite a bit of time on these as we move forward. 
+
+[oc-mirror docs](https://github.com/openshift/oc-mirror/blob/main/README.md)
+
+### Lets mirror the tar into the mirror-registry, replace your $HOSTNAME in the .sh file
+
+Again while this is running take some time to inspect the directories.
+
+> ./oc-mirror-to-registry.sh
+
+Once it complete inspect content/ also look at content/working-dir/cluster-resources
+
+### Prep for your ocp install in your aws account 
+
+> ssh-keygen
+* take the defaults
+
+> cat ~/.config/containers/auth.json
+* Copy the first full section as below and remove all of the spaces, note you will need to ensure you close out the { }
+
+```
+{
+	"auths": {
+		"bastion.sandbox213.opentlc.com:8443": {
+			"auth": "aW5pdDpLMmN1MTlBNExQWW9wcmg4bDd6Vk9OMHQzNjVqd1dmQw=="
+		}
+```
+
+> openshift-install create install-config 
+* SSH Public Key: id_ed25519.pub
+* Platform: AWS
+* AWS Access Key ID: "from demo.redhat.com"
+* AWS Secret Access Key: "from demo.redhat.com"
+* Region: us-east-1
+* Base Domain: sandbox213.opentlc.com
+* Cluster Name: ocp 
+* Pull Secret: {"auths": {"bastion.sandbox213.opentlc.com:8443": {"auth": "aW5pdDpLMmN1MTlBNExQWW9wcmg4bDd6Vk9OMHQzNjVqd1dmQw=="}}}
+
+Add the results from your mirror to the install. 
