@@ -1,4 +1,4 @@
-# Lets get our AWS Env setup with
+# Lets get our AWS Env setup
 * bastion 
 * mirror-registry
 * oc-mirror 
@@ -29,7 +29,7 @@ In the search bar search for
 
 [Default VPC](https://us-east-2.console.aws.amazon.com/vpc/home?region=us-east-2#CreateDefaultVpc:)
 
-### Creation your bastion (registry node)
+### Creation your bastion (registry node) 
 
 > Launch Instance
 
@@ -148,4 +148,33 @@ Once it complete inspect content/ also look at content/working-dir/cluster-resou
 * Cluster Name: ocp 
 * Pull Secret: {"auths": {"bastion.sandbox213.opentlc.com:8443": {"auth": "aW5pdDpLMmN1MTlBNExQWW9wcmg4bDd6Vk9OMHQzNjVqd1dmQw=="}}}
 
-Add the results from your mirror to the install. 
+### The content is mirrored and your install config is preped 
+
+Lets add the mirrors to your install and deploy your cluster. Review your oc-mirror-to-registry output. You should see 
+
+```
+[INFO]   : 📄 Generating IDMS file...
+[INFO]   : content/working-dir/cluster-resources/idms-oc-mirror.yaml file created
+[INFO]   : 📄 Generating ITMS file...
+[INFO]   : content/working-dir/cluster-resources/itms-oc-mirror.yaml file created
+```
+
+The idms file is the file that contains the openshift relase and release-images mirrors that are needed for the install
+
+cat ~/oc-mirror-hackathon/oc-mirror-master/content/working-dir/cluster-resources/idms-oc-mirror.yaml
+
+> vi install-config.yaml
+
+```
+imageDigestSources:
+  - mirrors:
+    - bastion.sandbox648.opentlc.com:8443/openshift/release
+    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
+  - mirrors:
+    - bastion.sandbox648.opentlc.com:8443/openshift/release-images
+    source: quay.io/openshift-release-dev/ocp-release
+```
+
+> cp install-config.yaml install-config.yaml.bk
+
+> openshift-install create cluster --log-level debug
