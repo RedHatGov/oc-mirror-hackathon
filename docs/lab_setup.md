@@ -148,7 +148,7 @@ Once it complete inspect content/ also look at content/working-dir/cluster-resou
 * Cluster Name: ocp 
 * Pull Secret: {"auths": {"bastion.sandbox213.opentlc.com:8443": {"auth": "aW5pdDpLMmN1MTlBNExQWW9wcmg4bDd6Vk9OMHQzNjVqd1dmQw=="}}}
 
-### The content is mirrored and your install config is preped 
+## The content is mirrored and your install config is preped, lets deploy your cluster
 
 Lets add the mirrors to your install and deploy your cluster. Review your oc-mirror-to-registry output. You should see 
 
@@ -175,6 +175,26 @@ imageDigestSources:
     source: quay.io/openshift-release-dev/ocp-release
 ```
 
+We also need to make sure the cluster trusts the mirror-registry
+
+> cat cat ~/quay-install/quay-rootCA/rootCA.pem
+
+Insert the ca into the additional trust bundle 
+
+```
+additionalTrustBundle: |
+  -----BEGIN CERTIFICATE-----
+  MIIEAjCCAuqgAwIBAgIUVvy4iIEfVUkgyK5tnaPnemUxuwkwDQYJKoZIhvcNAQEL
+  BQAweDELMAkGA1UEBhMCVVMxCzAJBgNVBAgMAlZBMREwDwYDVQQHDAhOZXcgWW9y
+  azENMAsGA1UECgwEUXVheTERMA8GA1UECwwIRGl2aXNpb24xJzAlBgNVBAMMHmJh
+```
+
 > cp install-config.yaml install-config.yaml.bk
 
 > openshift-install create cluster --log-level debug
+
+Copy your auth/kubeconfig into ~/.kube/config
+
+> mkdir ~/.kube && cp auth/kubeconfig ~/.kube/config
+
+> watch oc get co
