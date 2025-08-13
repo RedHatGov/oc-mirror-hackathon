@@ -290,6 +290,101 @@ verify_installations() {
     fi
 }
 
+# Setup oc auto-completion
+setup_oc_autocomplete() {
+    show_progress "Setting Up oc Auto-Completion"
+    
+    log_info "Configuring oc command auto-completion for bash and zsh"
+    
+    # Check if oc is available
+    if ! command_exists "oc"; then
+        log_error "oc command not found. Cannot setup auto-completion."
+        return 1
+    fi
+    
+    # Setup bash completion
+    if command_exists "bash"; then
+        log_info "Setting up bash completion for oc"
+        
+        # Create bash completion directory if it doesn't exist
+        local bash_completion_dir="/etc/bash_completion.d"
+        if [[ ! -d "$bash_completion_dir" ]]; then
+            sudo mkdir -p "$bash_completion_dir" || {
+                log_warn "Could not create bash completion directory"
+            }
+        fi
+        
+        # Generate and install bash completion
+        if oc completion bash | sudo tee /etc/bash_completion.d/oc > /dev/null 2>&1; then
+            log_info "Bash completion for oc installed successfully"
+        else
+            log_warn "Failed to install bash completion for oc"
+        fi
+    fi
+    
+    # Setup zsh completion
+    if command_exists "zsh"; then
+        log_info "Setting up zsh completion for oc"
+        
+        # Create zsh completion directory if it doesn't exist
+        local zsh_completion_dir="/usr/local/share/zsh/site-functions"
+        if [[ ! -d "$zsh_completion_dir" ]]; then
+            sudo mkdir -p "$zsh_completion_dir" || {
+                log_warn "Could not create zsh completion directory"
+            }
+        fi
+        
+        # Generate and install zsh completion
+        if oc completion zsh | sudo tee /usr/local/share/zsh/site-functions/_oc > /dev/null 2>&1; then
+            log_info "Zsh completion for oc installed successfully"
+        else
+            log_warn "Failed to install zsh completion for oc"
+        fi
+    fi
+    
+    # Setup user-specific completion for current user
+    local user_home=$(eval echo ~$USER)
+    local current_shell=$(basename "$SHELL")
+    
+    case "$current_shell" in
+        "bash")
+            log_info "Adding oc completion to user's .bashrc"
+            local bashrc="$user_home/.bashrc"
+            if [[ -f "$bashrc" ]]; then
+                # Check if completion is already added
+                if ! grep -q "oc completion bash" "$bashrc" 2>/dev/null; then
+                    echo "" >> "$bashrc"
+                    echo "# oc auto-completion" >> "$bashrc"
+                    echo "source <(oc completion bash)" >> "$bashrc"
+                    log_info "Added oc completion to .bashrc"
+                else
+                    log_info "oc completion already present in .bashrc"
+                fi
+            fi
+            ;;
+        "zsh")
+            log_info "Adding oc completion to user's .zshrc"
+            local zshrc="$user_home/.zshrc"
+            if [[ -f "$zshrc" ]]; then
+                # Check if completion is already added
+                if ! grep -q "oc completion zsh" "$zshrc" 2>/dev/null; then
+                    echo "" >> "$zshrc"
+                    echo "# oc auto-completion" >> "$zshrc"
+                    echo "source <(oc completion zsh)" >> "$zshrc"
+                    log_info "Added oc completion to .zshrc"
+                else
+                    log_info "oc completion already present in .zshrc"
+                fi
+            fi
+            ;;
+        *)
+            log_info "Current shell ($current_shell) detected. Manual completion setup may be required."
+            ;;
+    esac
+    
+    log_info "Auto-completion setup completed. Please restart your shell or run 'source ~/.bashrc' (or ~/.zshrc) to enable."
+}
+
 # Cleanup function
 cleanup() {
     log_info "Cleaning up temporary files..."
@@ -312,11 +407,18 @@ show_summary() {
     echo "Additional components:"
     echo "  • mirror-registry - Available in: $MIRROR_REGISTRY_DIR"
     echo
+    echo "Features configured:"
+    echo "  • Auto-completion for oc commands (restart shell to enable)"
+    echo
     echo "Usage examples:"
     echo "  oc-mirror --help"
     echo "  oc version"
     echo "  openshift-install version"
     echo "  butane --help"
+    echo
+    echo "To enable auto-completion immediately:"
+    echo "  source ~/.bashrc    # For bash users"
+    echo "  source ~/.zshrc     # For zsh users"
     echo
     echo "Log file: $LOG_FILE"
 }
@@ -384,6 +486,7 @@ main() {
     extract_archives
     install_binaries
     verify_installations
+    setup_oc_autocomplete
     cleanup
     show_summary
     
