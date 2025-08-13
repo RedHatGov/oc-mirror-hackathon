@@ -187,7 +187,7 @@ oc-mirror help
 # Check OpenShift CLI
 oc version
 
-# Check installer
+# Check installer (Note: the installer is specific for a release image)
 openshift-install version
 
 # Check butane
@@ -237,7 +237,7 @@ sudo cp ~/quay-install/quay-rootCA/rootCA.pem /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust
 
 # Verify certificate is trusted
-curl -I https://bastion.sandboxXXX.opentlc.com:8443
+curl -I https://${HOSTNAME}$:8443
 ```
 
 ### 4. Configure Authentication
@@ -257,7 +257,7 @@ vi ~/.config/containers/auth.json
 # Paste your pull secret content here
 
 # Login to your mirror registry (use credentials from installation)
-podman login https://bastion.sandboxXXX.opentlc.com:8443 \
+podman login https://${HOSTNAME}$:8443 \
   --username init \
   --password [YOUR_REGISTRY_PASSWORD] \
   --authfile ~/.config/containers/auth.json
@@ -364,6 +364,7 @@ Run the OpenShift installer configuration wizard:
 
 ```bash
 # Create install configuration
+cd ~/oc-mirror-hackathon/ocp
 openshift-install create install-config
 ```
 
@@ -386,9 +387,6 @@ openshift-install create install-config
 Edit the installation configuration to include mirror information:
 
 ```bash
-# Backup the original config
-cp install-config.yaml install-config.yaml.backup
-
 # Edit the configuration
 vi install-config.yaml
 ```
@@ -426,7 +424,7 @@ Execute the cluster installation:
 
 ```bash
 # Create a final backup of your config
-cp install-config.yaml install-config.yaml.final
+cp install-config.yaml install-config.yaml.bk
 
 # Deploy the cluster with debug logging
 openshift-install create cluster --log-level debug
