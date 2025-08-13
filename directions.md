@@ -88,10 +88,10 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 | Setting | Value | Notes |
 |---------|-------|-------|
 | **Name** | `bastion` | Descriptive name for identification |
-| **OS** | Red Hat Enterprise Linux 9 | Latest RHEL version |
+| **OS** | Red Hat Enterprise Linux 10 | Latest RHEL version |
 | **Instance Type** | `t2.large` | Minimum for mirroring operations |
 | **Key Pair** | Create new or select existing | Download and save securely |
-| **Storage** | 500 GB | Required for mirroring operations |
+| **Storage** | 1024 GB | Required for mirroring operations |
 | **Network** | Default VPC and subnet | Use created VPC |
 
 3. Click **"Launch Instance"**
@@ -204,11 +204,8 @@ Navigate to the mirror registry directory and run the installer:
 # Change to mirror registry directory
 cd ~/oc-mirror-hackathon/mirror-registry
 
-# Install mirror registry (replace XXX with your sandbox number)
-./mirror-registry install \
-  --quayHostname bastion.sandboxXXX.opentlc.com \
-  --quayRoot /home/ec2-user/registry \
-  --quayStorage /home/ec2-user/mirror-storage
+# Install mirror registry
+./mirror-registry install 
 ```
 
 > 📝 **Critical:** When the installation completes, **save the generated registry credentials** (username and password) to a secure location. You'll need these for authentication.

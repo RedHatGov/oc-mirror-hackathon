@@ -110,7 +110,7 @@ download_file() {
     
     log_info "Downloading: $filename"
     
-    if curl -fsSL --connect-timeout 30 --max-time 300 -o "$target_dir/$filename" "$url"; then
+    if curl -fsSL --connect-timeout 30 -o "$target_dir/$filename" "$url"; then
         log_info "Successfully downloaded: $filename"
         return 0
     else
