@@ -301,6 +301,14 @@ cd ~/oc-mirror-hackathon/oc-mirror-master/
 > - `.oc-mirror/` - Metadata and state information
 > - `content/` - Mirrored content ready for upload
 
+### NOTE: *If on Seperate hosts, move your content to your registry node.*
+
+```bash
+# Move your download's
+
+# Move your tar's
+```
+
 ### 3. Upload Content to Mirror Registry
 
 Transfer mirrored content to your registry:
@@ -479,7 +487,36 @@ oc get nodes -o wide
 
 3. **Access the web console** using the URL and credentials
 
-### 4. Verify Disconnected Operation
+### 4. Configure the cluster to trust your mirror-registry ssl cert 
+
+*I know, it should not be needed. Seeing as oc get cm user-ca-bundle -n openshift-config already exists*
+
+Create the CM with your hostname..8443 format
+
+```bash
+oc create configmap registry-config --from-file=$(hostname)..8443=${HOME}/quay-install/quay-rootCA/rootCA.pem -n openshift-config
+```
+
+Add the registry cert to the nodes in the cluster
+
+```bash
+oc patch image.config.openshift.io/cluster --patch '{"spec":{"additionalTrustedCA":{"name":"registry-config"}}}' --type=merge
+```
+
+### 5. Disable the existing default catalog 
+
+   ```bash
+   oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
+   ```
+
+### 6. Apply your oc-mirror artifacts
+
+```bash
+cd ~/oc-mirror-hackathon/oc-mirror-master
+oc apply -f content/working-dir/cluster-resources/
+```
+
+### 7. Verify Disconnected Operation
 
 Confirm your cluster is using mirrored content:
 
