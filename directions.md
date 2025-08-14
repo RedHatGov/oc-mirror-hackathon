@@ -301,12 +301,19 @@ cd ~/oc-mirror-hackathon/oc-mirror-master/
 > - `.oc-mirror/` - Metadata and state information
 > - `content/` - Mirrored content ready for upload
 
-### NOTE: *If on Seperate hosts, move your content to your registry node.*
+### Transfer Content Between Hosts (Optional)
+
+If you're using separate hosts for mirroring and registry operations, transfer the mirrored content:
 
 ```bash
-# Move your download's
+# Create archive for transfer
+tar -czf oc-mirror-content-$(date +%Y%m%d).tar.gz content/
 
-# Move your tar's
+# Transfer to registry host (replace with your target host)
+scp oc-mirror-content-$(date +%Y%m%d).tar.gz registry-host:/tmp/
+
+# On registry host, extract content
+ssh registry-host "cd /path/to/oc-mirror && tar -xzf /tmp/oc-mirror-content-$(date +%Y%m%d).tar.gz"
 ```
 
 ### 3. Upload Content to Mirror Registry
@@ -487,33 +494,67 @@ oc get nodes -o wide
 
 3. **Access the web console** using the URL and credentials
 
-### 4. Configure the cluster to trust your mirror-registry ssl cert 
+### 4. Configure Cluster Certificate Trust
 
-*I know, it should not be needed. Seeing as oc get cm user-ca-bundle -n openshift-config already exists*
+Configure the cluster to trust your mirror registry's SSL certificate:
 
-Create the CM with your hostname..8443 format
-
+#### Create Certificate ConfigMap
 ```bash
-oc create configmap registry-config --from-file=$(hostname)..8443=${HOME}/quay-install/quay-rootCA/rootCA.pem -n openshift-config
+# Create ConfigMap with registry certificate
+oc create configmap registry-config \
+  --from-file=$(hostname)..8443=${HOME}/quay-install/quay-rootCA/rootCA.pem \
+  -n openshift-config
 ```
 
-Add the registry cert to the nodes in the cluster
-
+#### Apply Certificate to Cluster
 ```bash
-oc patch image.config.openshift.io/cluster --patch '{"spec":{"additionalTrustedCA":{"name":"registry-config"}}}' --type=merge
+# Patch cluster image configuration to trust the registry
+oc patch image.config.openshift.io/cluster \
+  --patch '{"spec":{"additionalTrustedCA":{"name":"registry-config"}}}' \
+  --type=merge
 ```
 
-### 5. Disable the existing default catalog 
+> 📝 **Note:** This step ensures all cluster nodes trust your mirror registry's self-signed certificate.
 
-   ```bash
-   oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
-   ```
+### 5. Disable Default Operator Sources
 
-### 6. Apply your oc-mirror artifacts
+Disable the default OperatorHub sources to ensure operators are pulled from your mirror registry:
 
 ```bash
+# Disable all default operator sources
+oc patch OperatorHub cluster --type json \
+  -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
+```
+
+> ⚠️ **Important:** This prevents the cluster from attempting to pull operators from external registries.
+
+### 6. Apply Mirror Configuration Resources
+
+Apply the IDMS and ITMS resources generated during the mirroring process:
+
+```bash
+# Navigate to mirror configuration directory
 cd ~/oc-mirror-hackathon/oc-mirror-master
+
+# Apply all cluster resources
 oc apply -f content/working-dir/cluster-resources/
+```
+
+**Applied Resources:**
+- **IDMS** (ImageDigestMirrorSet): Maps digest-based image references to mirror registry
+- **ITMS** (ImageTagMirrorSet): Maps tag-based image references to mirror registry
+- **CatalogSource**: Defines operator catalog sources from mirror registry
+
+#### Verify Applied Resources
+```bash
+# Check IDMS resources
+oc get imageDigestMirrorSet
+
+# Check ITMS resources  
+oc get imageTagMirrorSet
+
+# Check catalog sources
+oc get catalogsource -n openshift-marketplace
 ```
 
 ### 7. Verify Disconnected Operation
