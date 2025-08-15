@@ -1,0 +1,5 @@
+.oc-mirror.log
+collect_ocp.log
+downloads/
+mirror-registry/
+oc-mirror-master/content/

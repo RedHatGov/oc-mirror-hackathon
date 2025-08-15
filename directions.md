@@ -26,7 +26,7 @@ This guide walks you through creating a complete disconnected OpenShift installa
 - **Disconnected Installation**: Air-gapped OpenShift cluster deployment
 
 ### What You'll Build
-- 🖥️ **Bastion Host**: RHEL 9 instance with all required tools
+- 🖥️ **Bastion Host**: RHEL 10 instance with all required tools
 - 🗃️ **Mirror Registry**: Self-hosted container registry
 - 📦 **Mirrored Content**: OpenShift 4.19.2 release and operators
 - ☁️ **OpenShift Cluster**: Disconnected cluster using mirrored content
@@ -41,7 +41,7 @@ This guide walks you through creating a complete disconnected OpenShift installa
 
 ### Technical Requirements
 - AWS Demo Environment (provided via Red Hat Demo Platform)
-- 500GB+ storage for mirroring operations
+- 500+ GB storage on bastion for mirroring operations (provided in AWS Demo Environment)
 - Stable internet connection for initial content download
 
 ## AWS Environment Setup
@@ -60,13 +60,14 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 - **Training Type:** Conduct internal training  
 - **Duration:** Auto-stop, Auto-destroy (1 week)
 
-> ⚠️ **Important:** Keep the demo environment page open for AWS credential access throughout the setup process.
+> ⚠️ **Important:** Keep the demo environment page open for AWS credential access throughout the setup process
 
 ### 2. AWS Console Access
 
-1. **Copy the AWS URL** from the demo environment page
-2. **Open in a new browser window**
-3. **Navigate to required services** (open each in new tabs):
+1. **Copy the AWS Web Console URL** from the demo environment page
+2. **Open this URL in a new browser window**
+3. **Log into AWS using the Web Console Credentials** from the demo environment page
+4. **Navigate to required AWS services** using Search at the top, with each service in a new tab:
    - **EC2:** Instance management and configuration
    - **Route53:** DNS configuration for the bastion host
 
@@ -82,8 +83,8 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 ### 1. Launch EC2 Instance
 
 #### Instance Configuration
-1. In EC2 Console, click **"Launch Instance"**
-2. Configure the following settings:
+1. In the EC2 Console, click **"Launch instance"**
+2. Use the wizard to configure the following settings:
 
 | Setting | Value | Notes |
 |---------|-------|-------|
@@ -91,23 +92,24 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 | **OS** | Red Hat Enterprise Linux 10 | Latest RHEL version |
 | **Instance Type** | `t2.large` | Minimum for mirroring operations |
 | **Key Pair** | Create new or select existing | Download and save securely |
-| **Storage** | 1024 GB | Required for mirroring operations |
-| **Network** | Default VPC and subnet | Use created VPC |
+| **Network** | Default VPC and subnet | Use previosly Default created VPC |
+| **Storage** | 1x 1024 GiB (gp3) | Required for mirroring operations |
 
-3. Click **"Launch Instance"**
+
+3. Click **"Launch instance"**
 
 ### 2. Security Group Configuration
 
-Configure inbound rules to allow mirror registry access:
+Configure inbound rule to allow access to mirror registry:
 
-1. **Select your bastion instance**
-2. Navigate to **"Security"** tab
-3. **Click on the Security Group** link (usually `launch-wizard-1`)
-4. Click **"Edit Inbound Rules"**
-5. **Add the following rule:**
+1. **Select your bastion instance** from the EC2 console
+2. Navigate to the **"Security"** tab
+3. **Click on the currently applied Security Group** link (usually `launch-wizard-1`)
+4. Click **"Edit inbound rules"**
+5. Click **"Add rule"** and use the following settings:
    - **Type:** Custom TCP
    - **Port Range:** 8443
-   - **Source:** 0.0.0.0/0 (for lab - restrict in production)
+   - **Source:** 0.0.0.0/0 (for lab/testing only - restrict in production)
 6. Click **"Save Rules"**
 
 ### 3. DNS Configuration
@@ -115,13 +117,14 @@ Configure inbound rules to allow mirror registry access:
 Set up DNS record for your bastion host:
 
 1. **Copy the public IP address** from your EC2 instance details
-2. **Navigate to Route53 console**
-3. **Select your hosted zone** (e.g., `sandboxXXX.opentlc.com`)
-4. **Click "Create Record"**:
+2. **Navigate to the Route53 console**
+3. **Click Hosted zones from the sidebar menu**
+4. **Select your hosted zone** (e.g. `sandboxXXX.opentlc.com`)
+5. **Click "Create record" and using the following settings**:
    - **Record Name:** `bastion`
    - **Record Type:** A
-   - **Value:** [Your EC2 Public IP]
-5. **Click "Create Records"**
+   - **Value:** [Your bastion EC2 instance's public IP]
+6. **Click "Create records"**
 
 ### 4. Connect to Bastion Host
 
@@ -170,7 +173,7 @@ Execute the automated collection script:
 ```
 
 **This script downloads and installs:**
-- 🔧 **oc-mirror** - Content mirroring tool for disconnected installations
+- 🔧 **oc-mirror** - Content mirroring tool for disconnected OpenShift installations
 - 🛠️ **openshift-install** - OpenShift cluster installer (v4.19.2)
 - 💻 **oc** - OpenShift command-line interface
 - 🗃️ **mirror-registry** - Local Quay container registry
@@ -208,26 +211,11 @@ cd ~/oc-mirror-hackathon/mirror-registry
 ./mirror-registry install 
 ```
 
-> 📝 **Critical:** When the installation completes, **save the generated registry credentials** (username and password) to a secure location. You'll need these for authentication.
+> 📝 **Critical:** When the installation completes, **save the generated registry credentials** (username and password) from the last line of the log output to a secure location. You'll need these for authentication.
 
-### 2. Configure Security Group (During Installation)
+### 2. Trust Registry SSL Certificate
 
-While the mirror registry is installing, configure the security group:
-
-1. **Return to your AWS EC2 console**
-2. **Click on your bastion instance**
-3. **Navigate to "Security" tab**
-4. **Click on the Security Group** (usually `launch-wizard-1`)
-5. **Click "Edit Inbound Rules"**
-6. **Add rule:**
-   - **Type:** Custom TCP
-   - **Port Range:** 8443
-   - **Source:** 0.0.0.0/0
-7. **Click "Save Rules"**
-
-### 3. Trust Registry SSL Certificate
-
-Configure the system to trust the registry's self-signed certificate:
+Configure the bastion to trust the registry's self-signed certificate:
 
 ```bash
 # Copy certificate to system trust store
@@ -237,15 +225,15 @@ sudo cp ~/quay-install/quay-rootCA/rootCA.pem /etc/pki/ca-trust/source/anchors/
 sudo update-ca-trust
 
 # Verify certificate is trusted
-curl -I https://${HOSTNAME}$:8443
+curl -I https://$(hostname):8443
 ```
 
-### 4. Configure Authentication
+### 3. Configure Authentication
 
 #### Download Red Hat Pull Secret
 1. **Navigate to:** [OpenShift Downloads](https://console.redhat.com/openshift/downloads)
-2. **Download your pull secret**
-3. **Copy the content to your bastion host**
+2. **Copy your pull secret**
+3. **Use the below commands to paste the pull secret in your bastion**
 
 #### Set Up Container Authentication
 ```bash
@@ -254,20 +242,20 @@ mkdir -p ~/.config/containers
 
 # Create auth.json file with your Red Hat pull secret
 vi ~/.config/containers/auth.json
-# Paste your pull secret content here
+# Paste your pull secret content into this auth.json file
 
 # Login to your mirror registry (use credentials from installation)
-podman login https://${HOSTNAME}$:8443 \
+podman login https://$(hostname):8443 \
   --username init \
   --password [YOUR_REGISTRY_PASSWORD] \
   --authfile ~/.config/containers/auth.json
 ```
 
-### 5. Verify Registry Access
+### 4. Verify Registry Access
 
 Test registry access via web browser:
-- **Navigate to:** `https://bastion.sandboxXXX.opentlc.com:8443`
-- **Login with the credentials** from the installation
+- **Navigate to your registry URL:** e.g. `https://bastion.sandboxXXX.opentlc.com:8443`
+- **Login with your credentials** from the installation
 - **Verify the registry interface loads**
 
 ## Content Mirroring
@@ -294,10 +282,10 @@ cd ~/oc-mirror-hackathon/oc-mirror-master/
 - Uses the `imageset-config.yaml` configuration
 - Downloads OpenShift 4.19.2 release content
 - Stores content locally in the `content/` directory
-- Creates cache in `.cache/` directory
+- Creates cache in `content/.cache/` subdirectory
 
 > 🔍 **Inspection Points:** While mirroring runs, explore these directories to understand the process:
-> - `.cache/` - Downloaded content cache
+> - `content/.cache/` - Downloaded content cache
 > - `.oc-mirror/` - Metadata and state information
 > - `content/` - Mirrored content ready for upload
 
