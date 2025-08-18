@@ -2,4 +2,5 @@
 collect_ocp.log
 downloads/
 mirror-registry/
-oc-mirror-master/content/
+oc-mirror-master/content
+oc-mirror-master/.cache 

@@ -12,6 +12,5 @@ mirror:
     - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
       packages:
         - name: web-terminal
-        - name: cluster-logging
-  additionalImages: 
-    - name: registry.redhat.io/ubi9/ubi:latest
+#  additionalImages: 
+#    - name: registry.redhat.io/ubi9/ubi:latest
