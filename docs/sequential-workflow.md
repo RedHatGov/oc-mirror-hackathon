@@ -13,6 +13,9 @@ Based on testing documented in `operational_patterns.md`, this workflow addresse
 ✅ **Air-Gapped Ready** - Built-in transfer guidance and dependency tracking  
 ✅ **Metadata Rich** - Complete operational information for each sequence  
 ✅ **Team Friendly** - Clear guidance for different operational scenarios  
+✅ **Two-Phase Workflow** - Separate mirror-to-disk and disk-to-mirror operations  
+✅ **Auto-Generated Scripts** - Self-contained upload scripts for each sequence  
+✅ **Mixed Content Support** - Platform + Operators + Additional Images in one workflow  
 
 ## Workflow Structure
 
@@ -20,19 +23,34 @@ Based on testing documented in `operational_patterns.md`, this workflow addresse
 ```
 content/
 ├── seq1-baseline/              # Complete initial content
-│   ├── mirror_000001.tar       # ~8GB
-│   ├── mirror_000002.tar       # ~8GB  
-│   ├── mirror_000003.tar       # ~6GB
+│   ├── mirror_000001.tar       # ~7.8GB
+│   ├── mirror_000002.tar       # ~7.5GB  
+│   ├── mirror_000003.tar       # ~6.1GB
 │   ├── imageset-config.yaml    # Config used for this sequence
-│   └── seq-metadata.yaml       # Operational metadata
-├── seq2-20240818-1430/         # Differential update (timestamped)
-│   ├── mirror_000001.tar       # ~5.5GB (only web-terminal)
+│   ├── seq-metadata.yaml       # Operational metadata
+│   ├── seq-upload.sh           # Auto-generated upload script
+│   └── working-dir/            # Generated after upload
+│       └── cluster-resources/  # IDMS/ITMS manifests
+├── seq2-20250818-0127/         # Differential update (timestamped)
+│   ├── mirror_000001.tar       # Differential archives
+│   ├── mirror_000002.tar       # (4 archives total)
+│   ├── mirror_000003.tar
+│   ├── mirror_000004.tar
 │   ├── imageset-config.yaml    # Config used for this sequence
-│   └── seq-metadata.yaml       # Dependencies and transfer info
-└── seq3-20240818-1545/         # Another differential update
-    ├── mirror_000001.tar       # ~3GB (only logging operator)
+│   ├── seq-metadata.yaml       # Dependencies and transfer info
+│   ├── seq-upload.sh           # Auto-generated upload script
+│   └── working-dir/            # Generated after upload
+│       └── cluster-resources/  # CUMULATIVE IDMS/ITMS manifests
+└── seq3-20250818-0155/         # Another differential update
+    ├── mirror_000001.tar       # Differential archives
+    ├── mirror_000002.tar       # (4 archives total)
+    ├── mirror_000003.tar
+    ├── mirror_000004.tar
     ├── imageset-config.yaml    # Config used for this sequence
-    └── seq-metadata.yaml
+    ├── seq-metadata.yaml
+    ├── seq-upload.sh           # Auto-generated upload script
+    └── working-dir/            # Generated after upload
+        └── cluster-resources/  # CUMULATIVE IDMS/ITMS manifests
 ```
 
 ### Metadata Example
@@ -58,6 +76,41 @@ air_gapped_transfer:
   cumulative_size: "29.5G"
 ```
 
+## Critical Operational Findings
+
+### Two-Phase Process 🎯
+
+**IMPORTANT:** The workflow operates in **two distinct phases**:
+
+#### Phase 1: Mirror-to-Disk (`./oc-mirror-sequential.sh`)
+- ✅ **Downloads** content from Red Hat registries
+- ✅ **Creates** tar archives for air-gap transfer  
+- ✅ **Generates** sequence metadata and upload scripts
+- ❌ **Does NOT generate** cluster resources (IDMS/ITMS)
+
+#### Phase 2: Disk-to-Mirror (`./seq-upload.sh`)  
+- ✅ **Uploads** content to local mirror registry
+- ✅ **Generates** cluster resources (IDMS/ITMS manifests)
+- ✅ **Creates** working directories with deployment artifacts
+- ✅ **Provides** ready-to-apply OpenShift manifests
+
+### CUMULATIVE Cluster Resources Pattern 🏗️
+
+**Testing Confirmed:** Cluster resources follow a **CUMULATIVE pattern**, not incremental:
+
+| Sequence | Content | IDMS Lines | Pattern |
+|----------|---------|------------|---------|
+| **seq1-baseline** | Platform only | 18 lines | Platform IDMS |
+| **seq2** | + web-terminal | 33 lines | Platform + Operator IDMS |
+| **seq3** | + cluster-logging | 36 lines | Platform + All Operators IDMS |
+| **seq4** | + ubi9 additional | 36 lines | Same (additionalImages don't add IDMS) |
+
+**Operational Impact:**
+- ✅ **Each sequence contains ALL previous content + new additions**  
+- ✅ **Cluster resources are complete snapshots, not deltas**
+- ✅ **Teams can deploy using ONLY the latest sequence's cluster resources**
+- ✅ **No need to apply multiple IDMS/ITMS files in sequence**
+
 ## Usage
 
 ### 1. Initial Mirror (Baseline)
@@ -80,12 +133,33 @@ vi imageset-config.yaml
 ./oc-mirror-sequential.sh
 
 # Output:
-# 📁 Creating sequence: seq2-20240818-1430 (differential)
+# 📁 Creating sequence: seq2-20250818-0127 (differential)
 # 📄 Copied configuration to sequence directory for tracking
 # ⚠️  DIFFERENTIAL CONTENT - Requires previous sequences
 ```
 
-### 3. List Existing Sequences
+### 3. Upload to Mirror Registry (Phase 2)
+```bash
+# Each sequence includes a self-contained upload script
+cd content/seq1-baseline
+./seq-upload.sh
+
+# Output:
+# [INFO] 📋 Sequence Information:
+#   sequence_number: 1
+#   description: "baseline"
+# [INFO] 📦 Archive Information:
+#     - name: "mirror_000001.tar"
+#       size: "7.8G"
+# [INFO] 🚀 Executing: oc-mirror --from file://. docker://registry:8443 --v2
+# ✅ Upload complete - cluster resources generated in working-dir/
+
+# For differential sequences (requires baseline to exist in registry):
+cd content/seq2-20250818-0127  
+./seq-upload.sh
+```
+
+### 4. List Existing Sequences
 ```bash
 ./oc-mirror-sequential.sh --list
 
@@ -134,27 +208,33 @@ tar -czf seq2-20240818-1430.tar.gz -C content seq2-20240818-1430/
 
 ### Monthly Update Workflow
 
-**Internet-Connected System:**
+**Internet-Connected System (Actual Test Results):**
 ```bash
-# Month 1: Baseline
+# Test 1: Baseline (OpenShift 4.19.2 platform)
 ./oc-mirror-sequential.sh
-# → seq1-baseline (22GB complete)
+# → seq1-baseline (22GB, 191 release images)
 
-# Month 2: Add operators  
+# Test 2: Add web-terminal operator  
 vi imageset-config.yaml  # Add web-terminal
 ./oc-mirror-sequential.sh
-# → seq2-20240818-1430 (5.5GB differential)
+# → seq2-20250818-0127 (30GB, +5 operator images)
 
-# Month 3: Add more operators
-vi imageset-config.yaml  # Add logging
+# Test 3: Add cluster-logging operator
+vi imageset-config.yaml  # Add cluster-logging
 ./oc-mirror-sequential.sh  
-# → seq3-20240918-0930 (3.2GB differential)
+# → seq3-20250818-0155 (32GB, +8 more operator images)
+
+# Test 4: Add UBI9 additional image
+vi imageset-config.yaml  # Add additionalImages
+./oc-mirror-sequential.sh
+# → seq4-20250818-0204 (32GB, +1 additional image)
 ```
 
-**Air-Gapped Transfer Planning:**
-- **Month 1**: Transfer 22GB (complete)
-- **Month 2**: Transfer 29.5GB cumulative (or manage sequences)
-- **Month 3**: Transfer 32.7GB cumulative (growing pattern)
+**Air-Gapped Transfer Planning (Actual Sizes):**
+- **Test 1**: Transfer 22GB (complete baseline)
+- **Test 2**: Transfer 52GB cumulative (differential requires baseline)
+- **Test 3**: Transfer 84GB cumulative (differential requires all previous)
+- **Test 4**: Transfer 116GB cumulative (mixed content types)
 
 ### Major Version Upgrade
 ```bash
@@ -189,6 +269,26 @@ cat imageset-config.yaml  # Shows exactly what was mirrored
 ```
 
 ## Troubleshooting
+
+### Script Reliability Improvements
+
+**CRITICAL FIX:** During testing, AWK parsing bugs were discovered and fixed in the `seq-upload.sh` template generation:
+
+#### Original Issue
+```bash
+# These patterns failed to parse YAML correctly:
+awk '/^archives:/,/^[a-z_]+:/' seq-metadata.yaml  # ❌ Stopped immediately  
+awk '/^air_gapped_transfer:/,/^[a-z_]+:/' seq-metadata.yaml  # ❌ Stopped immediately
+```
+
+#### Fixed Patterns  
+```bash
+# Corrected patterns that parse YAML properly:
+awk '/^archives:/,/^# /' seq-metadata.yaml  # ✅ Captures until next comment
+awk '/^air_gapped_transfer:/,0' seq-metadata.yaml  # ✅ Captures to end of file
+```
+
+**Status:** All existing and future `seq-upload.sh` scripts now include these fixes.
 
 ### Common Issues
 
@@ -234,6 +334,9 @@ grep -r "cumulative_size" content/*/seq-metadata.yaml
 2. **Maintain sequence history** for rollback capabilities
 3. **Monitor cumulative sizes** for storage planning
 4. **Use metadata files** for operational decisions
+5. **Apply ONLY the latest sequence's cluster resources** (CUMULATIVE pattern)
+6. **Complete upload phase** before considering cluster resources ready
+7. **Test seq-upload.sh scripts** in staging before production use
 
 ### For Air-Gapped Environments
 1. **Always transfer cumulative content** for differential sequences
@@ -307,6 +410,12 @@ The workflow addresses the core challenges identified in our testing while maint
 ---
 
 **Created:** August 2025  
-**Based on:** Operational testing and `operational_patterns.md` findings  
+**Based on:** Comprehensive operational testing and `operational_patterns.md` findings  
 **Tested Environment:** AWS Demo Platform, OpenShift 4.19.2, oc-mirror v2  
-**Status:** Production Ready
+**Test Results:** 
+- ✅ **4 sequential mirroring tests** (baseline → web-terminal → cluster-logging → ubi9)
+- ✅ **4 successful uploads** to mirror registry with cluster resource generation
+- ✅ **Mixed content types validated** (Platform + Operators + Additional Images)
+- ✅ **CUMULATIVE pattern confirmed** through IDMS line count analysis
+- ✅ **Script reliability fixes applied** and validated
+**Status:** Production Ready - Extensively Tested

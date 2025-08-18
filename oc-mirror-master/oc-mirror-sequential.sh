@@ -219,14 +219,14 @@ fi
 echo ""
 log_info "📦 Archive Information:"
 if [ -f "$SCRIPT_DIR/seq-metadata.yaml" ]; then
-    awk '/^archives:/,/^[a-z_]+:/' "$SCRIPT_DIR/seq-metadata.yaml" | grep -E "(name|size)" | sed 's/^/   /'
+    awk '/^archives:/,/^# /' "$SCRIPT_DIR/seq-metadata.yaml" | grep -E "(name|size)" | sed 's/^/   /'
 fi
 
 # Show air-gapped transfer info
 echo ""
 log_info "🚚 Transfer Information:"
 if [ -f "$SCRIPT_DIR/seq-metadata.yaml" ]; then
-    awk '/^air_gapped_transfer:/,/^[a-z_]+:/' "$SCRIPT_DIR/seq-metadata.yaml" | grep -E "(complete|dependencies)" | sed 's/^/   /'
+    awk '/^air_gapped_transfer:/,0' "$SCRIPT_DIR/seq-metadata.yaml" | grep -E "(complete|dependencies)" | sed 's/^/   /'
 fi
 
 echo ""
