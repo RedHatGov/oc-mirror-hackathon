@@ -4,3 +4,14 @@ downloads/
 mirror-registry/
 oc-mirror-master/content
 oc-mirror-master/.cache 
+oc-mirror-master/*.log
+ocp/auth/
+ocp/.clusterapi_output/
+ocp/.openshift_install.log
+ocp/.openshift_install_state.json
+ocp/auth/
+ocp/install-config.yaml.bk
+ocp/metadata.json
+ocp/terraform.platform.auto.tfvars.json
+ocp/terraform.tfvars.json
+ocp/tls/

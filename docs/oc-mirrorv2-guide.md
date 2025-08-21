@@ -146,6 +146,8 @@ oc-mirror --config isc.yaml --src-tls-verify=false --dest-tls-verify=false --v2 
 | Flag | Type | Description | Default | Example |
 |------|------|-------------|---------|---------|
 | `--image-timeout` | duration | Timeout for mirroring each image | System default | `--image-timeout=10m` |
+| `--parallel-images` | int | Number of images to mirror in parallel | `4` | `--parallel-images 16` |
+| `--parallel-layers` | int | Number of image layers to mirror in parallel | `4` | `--parallel-layers 20` |
 | `-p, --port` | int | HTTP port for local storage instance | `55000` | `--port 8080` |
 | `--max-nested-paths` | int | Maximum nested paths for registries | `0` (unlimited) | `--max-nested-paths 3` |
 
@@ -154,11 +156,40 @@ oc-mirror --config isc.yaml --src-tls-verify=false --dest-tls-verify=false --v2 
 # Set image timeout to 30 minutes
 oc-mirror --config isc.yaml --image-timeout=30m --v2 file://./output
 
+# High-performance parallel mirroring (16 images, 20 layers each)
+oc-mirror --config isc.yaml --parallel-images 16 --parallel-layers 20 --v2 file://./output
+
+# Moderate parallel processing for resource-constrained systems
+oc-mirror --config isc.yaml --parallel-images 8 --parallel-layers 10 --v2 file://./output
+
 # Use custom port for local storage
 oc-mirror --config isc.yaml --port 8080 --v2 file://./output
 
 # Limit nested paths for registry constraints
 oc-mirror --config isc.yaml --max-nested-paths 2 --v2 docker://registry.example.com:5000
+```
+
+### Reliability & Retry Flags
+
+| Flag | Type | Description | Default | Example |
+|------|------|-------------|---------|---------|
+| `--retry-times` | int | Number of retry attempts for failed operations | `3` | `--retry-times 100` |
+| `--retry-delay` | duration | Delay between retry attempts | `5s` | `--retry-delay 10s` |
+
+#### Reliability Examples
+```bash
+# High reliability for large mirroring operations (aggressive retries)
+oc-mirror --config isc.yaml --retry-times 100 --retry-delay 10s --v2 file://./output
+
+# Production-grade mirroring with full optimization
+oc-mirror --config isc.yaml \
+  --parallel-images 16 --parallel-layers 20 \
+  --retry-times 100 --retry-delay 10s \
+  --image-timeout 30m \
+  --v2 file://./output
+
+# Conservative retry settings for testing
+oc-mirror --config isc.yaml --retry-times 10 --retry-delay 30s --v2 file://./output
 ```
 
 ### Archive Management Flags
@@ -712,11 +743,56 @@ watch 'ps aux | grep oc-mirror; df -h; free -h'
 nice -n 10 oc-mirror --config isc.yaml --v2 file://./output
 ```
 
+#### Parallel Processing Optimization
+```bash
+# Maximum performance for high-end systems (enterprise)
+oc-mirror --config isc.yaml \
+  --parallel-images 32 --parallel-layers 32 \
+  --image-timeout 45m \
+  --retry-times 50 --retry-delay 5s \
+  --v2 file://./output
+
+# Balanced settings for typical production systems
+oc-mirror --config isc.yaml \
+  --parallel-images 16 --parallel-layers 20 \
+  --image-timeout 30m \
+  --retry-times 100 --retry-delay 10s \
+  --v2 file://./output
+
+# Conservative settings for resource-constrained environments
+oc-mirror --config isc.yaml \
+  --parallel-images 4 --parallel-layers 6 \
+  --image-timeout 60m \
+  --retry-times 200 --retry-delay 30s \
+  --v2 file://./output
+```
+
 #### Network Optimization
 ```bash
 # Use local mirror for faster downloads
 export REGISTRY_MIRROR="registry.local.company.com:5000"
 oc-mirror --config isc.yaml --v2 file://./output
+
+# Optimize for high-latency/unreliable connections
+oc-mirror --config isc.yaml \
+  --parallel-images 8 --parallel-layers 10 \
+  --image-timeout 60m \
+  --retry-times 200 --retry-delay 15s \
+  --v2 file://./output
+```
+
+#### Large-Scale Operations
+```bash
+# For mirroring 1000+ images (compliance operators, full catalogs)
+oc-mirror --config isc.yaml \
+  --parallel-images 16 --parallel-layers 20 \
+  --image-timeout 30m \
+  --retry-times 100 --retry-delay 10s \
+  --cache-dir /fast-storage/cache \
+  --v2 file://./output
+
+# Monitor performance during large operations
+watch 'echo "=== System Resources ==="; free -h; echo "=== Network ==="; ss -tuln | grep :443; echo "=== Disk I/O ==="; iostat -x 1 1'
 ```
 
 ## Migration from v1
@@ -788,6 +864,14 @@ oc-mirror --config isc.yaml --from file://./archive --v2 docker://registry.examp
 
 # Debug with verbose logging
 oc-mirror --config isc.yaml --loglevel debug --v2 file://./output
+
+# Production-optimized mirroring (1000+ images)
+oc-mirror --config isc.yaml \
+  --parallel-images 16 --parallel-layers 20 \
+  --retry-times 100 --retry-delay 10s \
+  --image-timeout 30m \
+  --cache-dir /fast-storage/cache \
+  --v2 file://./output
 ```
 
 ### Most Used Flags
@@ -797,6 +881,11 @@ oc-mirror --config isc.yaml --loglevel debug --v2 file://./output
 --cache-dir       # Cache location
 --workspace       # Working directory
 --authfile        # Authentication file
+--parallel-images # Number of images to mirror in parallel (default: 4)
+--parallel-layers # Number of layers to mirror in parallel (default: 4)
+--image-timeout   # Timeout per image (e.g., 30m)
+--retry-times     # Number of retry attempts (default: 3)
+--retry-delay     # Delay between retries (default: 5s)
 --dry-run         # Validation mode
 --loglevel        # Logging level (info, debug, trace, error)
 --from            # Archive source for upload
@@ -808,7 +897,8 @@ oc-mirror --config isc.yaml --loglevel debug --v2 file://./output
 - **Authentication**: `--authfile`
 - **Directories**: `--cache-dir`, `--workspace`
 - **Security**: `--dest-tls-verify`, `--src-tls-verify`, `--secure-policy`
-- **Performance**: `--image-timeout`, `--port`, `--max-nested-paths`
+- **Performance**: `--image-timeout`, `--parallel-images`, `--parallel-layers`, `--port`, `--max-nested-paths`
+- **Reliability**: `--retry-times`, `--retry-delay`
 - **Archives**: `--from`, `--since`, `--strict-archive`
 - **Debug**: `--dry-run`, `--loglevel`, `--help`
 

@@ -5,6 +5,8 @@
 **Component:** oc-mirror  
 **Labels:** v2, operational, feature-request, enterprise  
 
+- https://issues.redhat.com/browse/OCPBUGS-54443 EXISTING BUG - 
+
 ## Description
 
 **Description of problem:**

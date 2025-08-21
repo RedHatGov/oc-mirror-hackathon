@@ -395,10 +395,16 @@ main() {
         log_info "📄 Copied configuration to sequence directory for tracking"
     fi
     
-    # Run oc-mirror with sequence-specific directory
-    log_info "🔄 Running oc-mirror..."
+    # Run oc-mirror with sequence-specific directory and enhanced timeout configuration
+    log_info "🔄 Running oc-mirror with extended timeouts and retry logic..."
     
-    if ! oc-mirror -c "$CONFIG_FILE" "file://${seq_dir}" --v2 --cache-dir "$CACHE_DIR"; then
+    # Enhanced timeout and retry configuration for large operations
+    if ! oc-mirror -c "$CONFIG_FILE" "file://${seq_dir}" --v2 --cache-dir "$CACHE_DIR" \
+        --image-timeout=90m \
+        --retry-times 10 \
+        --retry-delay 30s \
+        --parallel-images 8 \
+        --parallel-layers 12; then
         log_error "oc-mirror failed!"
         exit 1
     fi
