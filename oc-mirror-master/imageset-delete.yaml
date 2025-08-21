@@ -1,0 +1,15 @@
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+archiveSize: 8
+storageConfig:
+  local:
+    path: ./delete-metadata
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.2
+      maxVersion: 4.19.6  # Only target versions older than current 4.19.7
+    graph: true
+  # Note: Not including operators or additionalImages in delete config
+  # This focuses deletion on OpenShift platform releases only
