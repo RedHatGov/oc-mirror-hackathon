@@ -22,27 +22,41 @@ Based on testing documented in `../operational_patterns.md`, the following criti
 - **Impact:** Extended troubleshooting time, increased support cases
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
+### 3. Context Timeout During Mirroring ([context-timeout-during-mirroring.md](./context-timeout-during-mirroring.md))
+- **Type:** Bug
+- **Priority:** High
+- **Issue:** oc-mirror v2 fails with "context deadline exceeded" during large image downloads
+- **Impact:** Extended operations fail unpredictably, blocking air-gapped workflows and upgrades
+- **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
+
 ## 📋 Enhancement Requests
 
-### 3. Documentation Gap ([documentation-gap.md](./documentation-gap.md))
+### 4. Documentation Gap ([documentation-gap.md](./documentation-gap.md))
 - **Type:** RFE
 - **Priority:** High
 - **Issue:** Missing operational guidance for differential archive behavior
 - **Impact:** Customer confusion, failed deployments, poor planning
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 4. Archive Management ([archive-management-rfe.md](./archive-management-rfe.md))
+### 5. Archive Management ([archive-management-rfe.md](./archive-management-rfe.md))
 - **Type:** RFE  
 - **Priority:** Normal
 - **Issue:** Lack of versioning, metadata, and operational tools for archive management
 - **Impact:** Difficult enterprise adoption, limited rollback capabilities
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 5. Operational User Experience ([operational-ux-rfe.md](./operational-ux-rfe.md))
+### 6. Operational User Experience ([operational-ux-rfe.md](./operational-ux-rfe.md))
 - **Type:** RFE
 - **Priority:** Normal  
 - **Issue:** Poor UX for air-gapped operations, insufficient guidance
 - **Impact:** Reduced usability, higher learning curve
+- **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
+
+### 7. Delete Command Missing Dry-Run ([delete-dry-run-rfe.md](./delete-dry-run-rfe.md))
+- **Type:** RFE
+- **Priority:** High  
+- **Issue:** oc-mirror v2 delete command lacks --dry-run safety validation
+- **Impact:** Operational risk from accidental deletions in production registries
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
 ## Testing Evidence
@@ -64,14 +78,15 @@ Each bug/RFE includes:
 
 ### High Priority (Customer Blocking)
 1. **Misleading Log Output** - Causes immediate operational failures
-2. **Documentation Gap** - Prevents successful air-gapped adoption
+2. **Context Timeout During Mirroring** - Blocks extended operations and upgrades
+3. **Documentation Gap** - Prevents successful air-gapped adoption
 
 ### Medium Priority (Operational Impact)  
-3. **Poor Error Messaging** - Increases support burden and troubleshooting time
-4. **Archive Management** - Limits enterprise operational capabilities
+4. **Poor Error Messaging** - Increases support burden and troubleshooting time
+5. **Archive Management** - Limits enterprise operational capabilities
 
 ### Lower Priority (User Experience)
-5. **Operational UX** - Improves usability but workarounds exist
+6. **Operational UX** - Improves usability but workarounds exist
 
 ## Implementation Recommendations
 
