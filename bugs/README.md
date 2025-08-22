@@ -52,12 +52,7 @@ Based on testing documented in `../operational_patterns.md`, the following criti
 - **Impact:** Reduced usability, higher learning curve
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 7. Delete Command Missing Dry-Run ([delete-dry-run-rfe.md](./delete-dry-run-rfe.md))
-- **Type:** RFE
-- **Priority:** High  
-- **Issue:** oc-mirror v2 delete command lacks --dry-run safety validation
-- **Impact:** Operational risk from accidental deletions in production registries
-- **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
+
 
 ## Testing Evidence
 

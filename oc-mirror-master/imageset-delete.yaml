@@ -1,10 +1,19 @@
-kind: ImageSetConfiguration
-apiVersion: mirror.openshift.io/v1alpha2
-archiveSize: 8
-storageConfig:
-  local:
-    path: ./delete-metadata
-mirror:
+# oc-mirror v2 Image Deletion Configuration
+# Purpose: Remove old OpenShift platform releases (4.19.2-4.19.6) while preserving current version 4.19.7+
+#
+# USAGE COMMANDS:
+# Step 1 - Generate delete plan (safe preview):
+#   oc mirror delete -c imageset-delete.yaml --generate --workspace file://./delete-workspace docker://your-registry.com:8443 --v2
+# Step 2 - Review generated plan:
+#   cat ./delete-workspace/working-dir/delete/delete-images.yaml
+# Step 3 - Execute deletion (after reviewing generated plan):
+#   oc mirror delete --v2 --delete-yaml-file ./delete-workspace/working-dir/delete/delete-images.yaml docker://your-registry.com:8443
+#
+# SAFETY: The --generate phase creates a reviewable deletion plan without executing any deletions.
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: DeleteImageSetConfiguration
+delete:
   platform:
     channels:
     - name: stable-4.19
