@@ -6,9 +6,11 @@
 # Description: Downloads and installs OpenShift tools for disconnected
 #              installation including oc-mirror, openshift-install, oc client,
 #              butane, and mirror-registry
-# Author: OpenShift Mirror Hackathon Team
-# Version: 2.0
+# Author: OpenShift Mirror Hackathon Team  
+# Version: 2.1
 # Usage: ./collect_ocp [--help] [--version VERSION]
+#        OPENSHIFT_VERSION=stable ./collect_ocp     # Use latest stable
+#        OPENSHIFT_VERSION=4.19.2 ./collect_ocp    # Use specific version
 #==============================================================================
 
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
@@ -20,8 +22,9 @@ readonly LOG_FILE="${SCRIPT_DIR}/collect_ocp.log"
 readonly DOWNLOADS_DIR="${SCRIPT_DIR}/downloads"
 readonly MIRROR_REGISTRY_DIR="${SCRIPT_DIR}/mirror-registry"
 
-# Default OpenShift version (can be overridden)
-OPENSHIFT_VERSION="${OPENSHIFT_VERSION:-4.19.2}"
+# Default OpenShift version (can be overridden with environment variable)
+# Use "stable" for latest stable version, or specify exact version like "4.19.2"
+OPENSHIFT_VERSION="stable"
 
 # Download URLs
 readonly BASE_URL="https://mirror.openshift.com/pub/openshift-v4/x86_64/clients"
@@ -119,6 +122,62 @@ download_file() {
     fi
 }
 
+# Download and rename OpenShift installer with version tracking
+download_openshift_install() {
+    local target_dir="${1:-$DOWNLOADS_DIR}"
+    local openshift_install_url
+    local actual_version
+    local source_filename
+    local target_filename
+    
+    if [[ "$OPENSHIFT_VERSION" == "stable" ]]; then
+        # Use stable channel URL
+        openshift_install_url="$BASE_URL/ocp/stable-4.19/openshift-install-linux.tar.gz"
+        source_filename="openshift-install-linux.tar.gz"
+        
+        # Try to detect actual stable version number
+        log_info "Detecting stable version from release info..."
+        local stable_version
+        if stable_version=$(curl -s "$BASE_URL/ocp/stable-4.19/release.txt" | grep "Name:" | awk '{print $2}' 2>/dev/null); then
+            actual_version="$stable_version"
+            log_info "Detected stable version: $actual_version"
+        else
+            # Fallback to stable-4.19 if detection fails
+            actual_version="stable-4.19"
+            log_warn "Could not detect exact stable version, using: $actual_version"
+        fi
+        target_filename="openshift-install-linux-${actual_version}.tar.gz"
+    else
+        # Use specific version URL
+        openshift_install_url="$BASE_URL/ocp/$OPENSHIFT_VERSION/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz"
+        source_filename="openshift-install-linux-$OPENSHIFT_VERSION.tar.gz"
+        actual_version="$OPENSHIFT_VERSION"
+        target_filename="$source_filename"
+    fi
+    
+    log_info "Downloading OpenShift installer version: $actual_version"
+    log_info "URL: $openshift_install_url"
+    
+    # Download with original filename first
+    if curl -fsSL --connect-timeout 30 -o "$target_dir/$source_filename" "$openshift_install_url"; then
+        # Rename to include version if needed
+        if [[ "$source_filename" != "$target_filename" ]]; then
+            mv "$target_dir/$source_filename" "$target_dir/$target_filename"
+            log_info "Renamed to: $target_filename"
+        fi
+        
+        log_info "Successfully downloaded OpenShift installer: $target_filename"
+        
+        # Update global variable for extraction phase
+        ACTUAL_OPENSHIFT_VERSION="$actual_version"
+        export ACTUAL_OPENSHIFT_VERSION
+        return 0
+    else
+        log_error "Failed to download OpenShift installer from: $openshift_install_url"
+        return 1
+    fi
+}
+
 # Extract archive with verification
 extract_archive() {
     local archive="$1"
@@ -191,18 +250,23 @@ download_openshift_tools() {
     local downloads=(
         "$BASE_URL/ocp/stable/oc-mirror.tar.gz"
         "$BASE_URL/ocp/stable/openshift-client-linux.tar.gz"
-        "$BASE_URL/ocp/$OPENSHIFT_VERSION/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz"
         "$BASE_URL/butane/latest/butane-amd64"
         "$MIRROR_REGISTRY_URL/mirror-registry-amd64.tar.gz"
     )
     
     local failed_downloads=()
     
+    # Download standard tools
     for url in "${downloads[@]}"; do
         if ! download_file "$url"; then
             failed_downloads+=("$url")
         fi
     done
+    
+    # Download OpenShift installer with version-aware logic
+    if ! download_openshift_install; then
+        failed_downloads+=("openshift-install (version: $OPENSHIFT_VERSION)")
+    fi
     
     if [[ ${#failed_downloads[@]} -gt 0 ]]; then
         log_error "Failed to download the following files:"
@@ -219,10 +283,13 @@ download_openshift_tools() {
 extract_archives() {
     show_progress "Extracting Archives"
     
+    # Use the actual version that was downloaded
+    local openshift_version="${ACTUAL_OPENSHIFT_VERSION:-$OPENSHIFT_VERSION}"
+    
     local archives=(
         "$DOWNLOADS_DIR/oc-mirror.tar.gz:$DOWNLOADS_DIR"
         "$DOWNLOADS_DIR/openshift-client-linux.tar.gz:$DOWNLOADS_DIR"
-        "$DOWNLOADS_DIR/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz:$DOWNLOADS_DIR"
+        "$DOWNLOADS_DIR/openshift-install-linux-${openshift_version}.tar.gz:$DOWNLOADS_DIR"
         "$DOWNLOADS_DIR/mirror-registry-amd64.tar.gz:$MIRROR_REGISTRY_DIR"
     )
     
