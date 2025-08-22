@@ -88,19 +88,27 @@ cd oc-mirror-hackathon
 
 ### 3. Download OpenShift Binaries
 
-Execute the automated collection script:
+Execute the simplified collection script:
 
 ```bash
+# Edit the OpenShift version if needed (default is "stable")
+# Edit line 14 in collect_ocp_simple: OPENSHIFT_VERSION="4.19.2"
+
 # Run the collection script
-./collect_ocp
+./collect_ocp_simple
 ```
 
 **This script downloads and installs:**
 - 🔧 **oc-mirror** - Content mirroring tool for disconnected OpenShift installations
-- 🛠️ **openshift-install** - OpenShift cluster installer
+- 🛠️ **openshift-install** - OpenShift cluster installer (version-specific)
 - 💻 **oc** - OpenShift command-line interface
 - 🗃️ **mirror-registry** - Local Quay container registry
 - ⚙️ **butane** - Machine configuration generation tool
+
+**For air-gapped systems:**
+The script creates `downloads/install.sh` for easy deployment on disconnected systems:
+1. Copy the entire `downloads/` directory to your air-gapped environment
+2. Run `cd downloads && ./install.sh` to install all tools
 
 ### 4. Verify Installation
 

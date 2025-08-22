@@ -1,500 +1,65 @@
 #!/bin/bash
 
 #==============================================================================
-# OpenShift Collection Script
+# Simple OpenShift Collection Script
 #==============================================================================
-# Description: Downloads and installs OpenShift tools for disconnected
-#              installation including oc-mirror, openshift-install, oc client,
-#              butane, and mirror-registry
-# Author: OpenShift Mirror Hackathon Team
-# Version: 2.0
-# Usage: ./collect_ocp [--help] [--version VERSION]
+# Downloads OpenShift tools and installs to PATH
+# Usage: Edit OPENSHIFT_VERSION variable below, then run: ./collect_ocp_simple
 #==============================================================================
 
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
+set -e
 
-# Script configuration
-readonly SCRIPT_NAME="$(basename "$0")"
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly LOG_FILE="${SCRIPT_DIR}/collect_ocp.log"
-readonly DOWNLOADS_DIR="${SCRIPT_DIR}/downloads"
-readonly MIRROR_REGISTRY_DIR="${SCRIPT_DIR}/mirror-registry"
+# Set the OpenShift version to download
+# Use "stable" for latest stable, or specific version like "4.19.2"
+OPENSHIFT_VERSION="4.19.2"
+BASE_URL="https://mirror.openshift.com/pub/openshift-v4/x86_64/clients"
 
-# Default OpenShift version (can be overridden)
-OPENSHIFT_VERSION="${OPENSHIFT_VERSION:-4.19.2}"
+echo "=== Downloading OpenShift Tools (version: $OPENSHIFT_VERSION) ==="
 
-# Download URLs
-readonly BASE_URL="https://mirror.openshift.com/pub/openshift-v4/x86_64/clients"
-readonly MIRROR_REGISTRY_URL="https://mirror.openshift.com/pub/cgw/mirror-registry/latest"
+# Create directories
+mkdir -p downloads downloads/mirror-registry
 
-#==============================================================================
-# Utility Functions
-#==============================================================================
+# Download standard tools (always from stable)
+echo "Downloading oc-mirror..."
+curl -L -o downloads/oc-mirror.tar.gz "$BASE_URL/ocp/stable/oc-mirror.tar.gz"
 
-# Logging function
-log() {
-    local level="$1"
-    shift
-    local message="$*"
-    local timestamp=$(date '+%Y-%m-%d %H:%M:%S')
-    echo "[$timestamp] [$level] $message" | tee -a "$LOG_FILE"
-}
+echo "Downloading openshift-client..."
+curl -L -o downloads/openshift-client-linux.tar.gz "$BASE_URL/ocp/stable/openshift-client-linux.tar.gz" 
 
-# Info logging
-log_info() {
-    log "INFO" "$@"
-}
+echo "Downloading butane..."
+curl -L -o downloads/butane "$BASE_URL/butane/latest/butane-amd64"
 
-# Error logging
-log_error() {
-    log "ERROR" "$@"
-}
+echo "Downloading mirror-registry..."
+curl -L -o downloads/mirror-registry-amd64.tar.gz "https://mirror.openshift.com/pub/cgw/mirror-registry/latest/mirror-registry-amd64.tar.gz"
 
-# Warning logging
-log_warn() {
-    log "WARN" "$@"
-}
+# Download openshift-install with version-aware naming
+if [[ "$OPENSHIFT_VERSION" == "stable" ]]; then
+    echo "Downloading openshift-install (stable)..."
+    curl -L -o downloads/openshift-install-linux-stable.tar.gz "$BASE_URL/ocp/stable/openshift-install-linux.tar.gz"
+    INSTALL_ARCHIVE="openshift-install-linux-stable.tar.gz"
+else
+    echo "Downloading openshift-install (version: $OPENSHIFT_VERSION)..."
+    curl -L -o downloads/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz "$BASE_URL/ocp/$OPENSHIFT_VERSION/openshift-install-linux.tar.gz"
+    INSTALL_ARCHIVE="openshift-install-linux-$OPENSHIFT_VERSION.tar.gz"
+fi
 
-# Progress indicator
-show_progress() {
-    local message="$1"
-    echo
-    echo "=============================================="
-    echo "  $message"
-    echo "=============================================="
-}
+echo "=== Extracting Archives ==="
 
-# Check if command exists
-command_exists() {
-    command -v "$1" >/dev/null 2>&1
-}
+# Extract everything
+tar -xf downloads/mirror-registry-amd64.tar.gz -C downloads/mirror-registry/
+tar -xf downloads/oc-mirror.tar.gz -C downloads/
+tar -xf downloads/openshift-client-linux.tar.gz -C downloads/
+tar -xf downloads/$INSTALL_ARCHIVE -C downloads/
 
-# Verify required commands
-check_prerequisites() {
-    log_info "Checking prerequisites..."
-    
-    local missing_commands=()
-    
-    for cmd in curl tar sudo; do
-        if ! command_exists "$cmd"; then
-            missing_commands+=("$cmd")
-        fi
-    done
-    
-    if [[ ${#missing_commands[@]} -gt 0 ]]; then
-        log_error "Missing required commands: ${missing_commands[*]}"
-        log_error "Please install the missing commands and try again"
-        exit 1
-    fi
-    
-    log_info "All prerequisites satisfied"
-}
+echo "=== Installing to PATH (Connected System) ==="
 
-# Create directory with error handling
-create_directory() {
-    local dir="$1"
-    if [[ ! -d "$dir" ]]; then
-        log_info "Creating directory: $dir"
-        mkdir -p "$dir" || {
-            log_error "Failed to create directory: $dir"
-            exit 1
-        }
-    fi
-}
-
-# Download file with verification
-download_file() {
-    local url="$1"
-    local filename="$(basename "$url")"
-    local target_dir="${2:-$DOWNLOADS_DIR}"
-    
-    log_info "Downloading: $filename"
-    
-    if curl -fsSL --connect-timeout 30 -o "$target_dir/$filename" "$url"; then
-        log_info "Successfully downloaded: $filename"
-        return 0
-    else
-        log_error "Failed to download: $url"
-        return 1
-    fi
-}
-
-# Extract archive with verification
-extract_archive() {
-    local archive="$1"
-    local destination="$2"
-    local archive_type="${archive##*.}"
-    
-    log_info "Extracting: $(basename "$archive") to $destination"
-    
-    case "$archive_type" in
-        "gz")
-            if tar -xzf "$archive" -C "$destination" 2>/dev/null; then
-                log_info "Successfully extracted: $(basename "$archive")"
-                return 0
-            else
-                log_error "Failed to extract: $archive"
-                return 1
-            fi
-            ;;
-        *)
-            log_error "Unsupported archive type: $archive_type"
-            return 1
-            ;;
-    esac
-}
-
-# Install binary to system path
-install_binary() {
-    local binary="$1"
-    local source_path="$2"
-    local target_path="/usr/local/bin/$binary"
-    
-    if [[ ! -f "$source_path" ]]; then
-        log_error "Binary not found: $source_path"
-        return 1
-    fi
-    
-    log_info "Installing: $binary to $target_path"
-    
-    if sudo cp "$source_path" "$target_path" && sudo chmod 755 "$target_path"; then
-        log_info "Successfully installed: $binary"
-        return 0
-    else
-        log_error "Failed to install: $binary"
-        return 1
-    fi
-}
-
-# Verify installed binary
-verify_installation() {
-    local binary="$1"
-    local expected_location="/usr/local/bin/$binary"
-    
-    if [[ -x "$expected_location" ]]; then
-        log_info "Verified installation: $binary"
-        return 0
-    else
-        log_warn "Installation verification failed: $binary"
-        return 1
-    fi
-}
-
-#==============================================================================
-# Main Functions
-#==============================================================================
-
-# Download all required files
-download_openshift_tools() {
-    show_progress "Downloading OpenShift Tools"
-    
-    local downloads=(
-        "$BASE_URL/ocp/stable/oc-mirror.tar.gz"
-        "$BASE_URL/ocp/stable/openshift-client-linux.tar.gz"
-        "$BASE_URL/ocp/$OPENSHIFT_VERSION/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz"
-        "$BASE_URL/butane/latest/butane-amd64"
-        "$MIRROR_REGISTRY_URL/mirror-registry-amd64.tar.gz"
-    )
-    
-    local failed_downloads=()
-    
-    for url in "${downloads[@]}"; do
-        if ! download_file "$url"; then
-            failed_downloads+=("$url")
-        fi
-    done
-    
-    if [[ ${#failed_downloads[@]} -gt 0 ]]; then
-        log_error "Failed to download the following files:"
-        for failed in "${failed_downloads[@]}"; do
-            log_error "  - $failed"
-        done
-        exit 1
-    fi
-    
-    log_info "All downloads completed successfully"
-}
-
-# Extract downloaded archives
-extract_archives() {
-    show_progress "Extracting Archives"
-    
-    local archives=(
-        "$DOWNLOADS_DIR/oc-mirror.tar.gz:$DOWNLOADS_DIR"
-        "$DOWNLOADS_DIR/openshift-client-linux.tar.gz:$DOWNLOADS_DIR"
-        "$DOWNLOADS_DIR/openshift-install-linux-$OPENSHIFT_VERSION.tar.gz:$DOWNLOADS_DIR"
-        "$DOWNLOADS_DIR/mirror-registry-amd64.tar.gz:$MIRROR_REGISTRY_DIR"
-    )
-    
-    for archive_info in "${archives[@]}"; do
-        local archive="${archive_info%:*}"
-        local destination="${archive_info#*:}"
-        
-        if [[ -f "$archive" ]]; then
-            extract_archive "$archive" "$destination"
-        else
-            log_warn "Archive not found: $archive"
-        fi
-    done
-}
-
-# Install binaries to system
-install_binaries() {
-    show_progress "Installing Binaries"
-    
-    local binaries=(
-        "oc-mirror:$DOWNLOADS_DIR/oc-mirror"
-        "oc:$DOWNLOADS_DIR/oc"
-        "openshift-install:$DOWNLOADS_DIR/openshift-install"
-        "butane:$DOWNLOADS_DIR/butane-amd64"
-    )
-    
-    local failed_installations=()
-    
-    for binary_info in "${binaries[@]}"; do
-        local binary="${binary_info%:*}"
-        local source="${binary_info#*:}"
-        
-        if ! install_binary "$binary" "$source"; then
-            failed_installations+=("$binary")
-        fi
-    done
-    
-    if [[ ${#failed_installations[@]} -gt 0 ]]; then
-        log_error "Failed to install the following binaries:"
-        for failed in "${failed_installations[@]}"; do
-            log_error "  - $failed"
-        done
-        exit 1
-    fi
-}
-
-# Verify all installations
-verify_installations() {
-    show_progress "Verifying Installations"
-    
-    local binaries=("oc-mirror" "oc" "openshift-install" "butane")
-    local verification_failed=false
-    
-    for binary in "${binaries[@]}"; do
-        if ! verify_installation "$binary"; then
-            verification_failed=true
-        fi
-    done
-    
-    if [[ "$verification_failed" == "true" ]]; then
-        log_warn "Some installations could not be verified"
-        log_warn "Please check manually using: which <binary-name>"
-    else
-        log_info "All installations verified successfully"
-    fi
-}
-
-# Setup oc auto-completion
-setup_oc_autocomplete() {
-    show_progress "Setting Up oc Auto-Completion"
-    
-    log_info "Configuring oc command auto-completion for bash and zsh"
-    
-    # Check if oc is available
-    if ! command_exists "oc"; then
-        log_error "oc command not found. Cannot setup auto-completion."
-        return 1
-    fi
-    
-    # Setup bash completion
-    if command_exists "bash"; then
-        log_info "Setting up bash completion for oc"
-        
-        # Create bash completion directory if it doesn't exist
-        local bash_completion_dir="/etc/bash_completion.d"
-        if [[ ! -d "$bash_completion_dir" ]]; then
-            sudo mkdir -p "$bash_completion_dir" || {
-                log_warn "Could not create bash completion directory"
-            }
-        fi
-        
-        # Generate and install bash completion
-        if oc completion bash | sudo tee /etc/bash_completion.d/oc > /dev/null 2>&1; then
-            log_info "Bash completion for oc installed successfully"
-        else
-            log_warn "Failed to install bash completion for oc"
-        fi
-    fi
-    
-    # Setup zsh completion
-    if command_exists "zsh"; then
-        log_info "Setting up zsh completion for oc"
-        
-        # Create zsh completion directory if it doesn't exist
-        local zsh_completion_dir="/usr/local/share/zsh/site-functions"
-        if [[ ! -d "$zsh_completion_dir" ]]; then
-            sudo mkdir -p "$zsh_completion_dir" || {
-                log_warn "Could not create zsh completion directory"
-            }
-        fi
-        
-        # Generate and install zsh completion
-        if oc completion zsh | sudo tee /usr/local/share/zsh/site-functions/_oc > /dev/null 2>&1; then
-            log_info "Zsh completion for oc installed successfully"
-        else
-            log_warn "Failed to install zsh completion for oc"
-        fi
-    fi
-    
-    # Setup user-specific completion for current user
-    local user_home=$(eval echo ~$USER)
-    local current_shell=$(basename "$SHELL")
-    
-    case "$current_shell" in
-        "bash")
-            log_info "Adding oc completion to user's .bashrc"
-            local bashrc="$user_home/.bashrc"
-            if [[ -f "$bashrc" ]]; then
-                # Check if completion is already added
-                if ! grep -q "oc completion bash" "$bashrc" 2>/dev/null; then
-                    echo "" >> "$bashrc"
-                    echo "# oc auto-completion" >> "$bashrc"
-                    echo "source <(oc completion bash)" >> "$bashrc"
-                    log_info "Added oc completion to .bashrc"
-                else
-                    log_info "oc completion already present in .bashrc"
-                fi
-            fi
-            ;;
-        "zsh")
-            log_info "Adding oc completion to user's .zshrc"
-            local zshrc="$user_home/.zshrc"
-            if [[ -f "$zshrc" ]]; then
-                # Check if completion is already added
-                if ! grep -q "oc completion zsh" "$zshrc" 2>/dev/null; then
-                    echo "" >> "$zshrc"
-                    echo "# oc auto-completion" >> "$zshrc"
-                    echo "source <(oc completion zsh)" >> "$zshrc"
-                    log_info "Added oc completion to .zshrc"
-                else
-                    log_info "oc completion already present in .zshrc"
-                fi
-            fi
-            ;;
-        *)
-            log_info "Current shell ($current_shell) detected. Manual completion setup may be required."
-            ;;
-    esac
-    
-    log_info "Auto-completion setup completed. Please restart your shell or run 'source ~/.bashrc' (or ~/.zshrc) to enable."
-}
-
-# Cleanup function
-cleanup() {
-    log_info "Cleaning up temporary files..."
-    # Remove any temporary files if needed
-    # Currently keeping downloads for troubleshooting
-}
-
-# Display installation summary
-show_summary() {
-    show_progress "Installation Summary"
-    
-    echo "OpenShift tools have been installed to /usr/local/bin/"
-    echo
-    echo "Installed tools:"
-    echo "  • oc-mirror     - Content mirroring tool"
-    echo "  • oc            - OpenShift CLI client"
-    echo "  • openshift-install - OpenShift installer (v$OPENSHIFT_VERSION)"
-    echo "  • butane        - Machine config generator"
-    echo
-    echo "Additional components:"
-    echo "  • mirror-registry - Available in: $MIRROR_REGISTRY_DIR"
-    echo
-    echo "Features configured:"
-    echo "  • Auto-completion for oc commands (restart shell to enable)"
-    echo
-    echo "Usage examples:"
-    echo "  oc-mirror --help"
-    echo "  oc version"
-    echo "  openshift-install version"
-    echo "  butane --help"
-    echo
-    echo "To enable auto-completion immediately:"
-    echo "  source ~/.bashrc    # For bash users"
-    echo "  source ~/.zshrc     # For zsh users"
-    echo
-    echo "Log file: $LOG_FILE"
-}
-
-# Display help
-show_help() {
-    cat << EOF
-Usage: $SCRIPT_NAME [OPTIONS]
-
-Download and install OpenShift tools for disconnected installation.
-
-OPTIONS:
-    --version VERSION    Specify OpenShift version (default: $OPENSHIFT_VERSION)
-    --help              Show this help message
-
-DESCRIPTION:
-    This script downloads and installs the following OpenShift tools:
-    - oc-mirror: Content mirroring tool for disconnected installations
-    - oc: OpenShift command-line interface
-    - openshift-install: OpenShift cluster installer
-    - butane: Machine configuration generator
-    - mirror-registry: Local container registry
-
-EXAMPLES:
-    $SCRIPT_NAME                    # Install with default version
-    $SCRIPT_NAME --version 4.20.0  # Install specific version
-
-EOF
-}
-
-#==============================================================================
-# Main Script Logic
-#==============================================================================
-
-main() {
-    # Parse command line arguments
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            --version)
-                OPENSHIFT_VERSION="$2"
-                shift 2
-                ;;
-            --help)
-                show_help
-                exit 0
-                ;;
-            *)
-                log_error "Unknown option: $1"
-                show_help
-                exit 1
-                ;;
-        esac
-    done
-    
-    # Initialize log file
-    echo "OpenShift Collection Script started at $(date)" > "$LOG_FILE"
-    
-    log_info "Starting OpenShift tools collection (version: $OPENSHIFT_VERSION)"
-    
-    # Execute main workflow
-    check_prerequisites
-    create_directory "$DOWNLOADS_DIR"
-    create_directory "$MIRROR_REGISTRY_DIR"
-    download_openshift_tools
-    extract_archives
-    install_binaries
-    verify_installations
-    setup_oc_autocomplete
-    cleanup
-    show_summary
-    
-    log_info "OpenShift tools collection completed successfully"
-}
-
-# Trap for cleanup on script exit
-trap cleanup EXIT
-
-# Execute main function with all arguments
-main "$@"
+# Run the install script to install tools locally
+cd downloads && ./install.sh && cd ..
+echo ""
+echo "Downloads saved in: downloads/"
+echo "Mirror registry in: downloads/mirror-registry/"
+echo "Install script: downloads/install.sh"
+echo ""
+echo "💡 For disconnected systems:"
+echo "   1. Copy the entire 'downloads/' directory to your air-gapped environment"
+echo "   2. cd downloads && ./install.sh"
