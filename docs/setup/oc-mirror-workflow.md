@@ -1,157 +1,94 @@
-# OpenShift Disconnected Installation Complete Guide
+# OpenShift Disconnected Installation with oc-mirror
 
-A comprehensive step-by-step guide for setting up a disconnected OpenShift environment using AWS, including bastion host setup, mirror registry deployment, content mirroring, and cluster installation.
+A comprehensive step-by-step guide for setting up disconnected OpenShift content mirroring using oc-mirror. This guide is platform-agnostic and works on any Linux system with the required tools installed.
 
 ## Table of Contents
 
 1. [Overview](#overview)
 2. [Prerequisites](#prerequisites)
-3. [AWS Environment Setup](#aws-environment-setup)
-4. [Bastion Host Configuration](#bastion-host-configuration)
-5. [OpenShift Tools Installation](#openshift-tools-installation)
-6. [Mirror Registry Setup](#mirror-registry-setup)
-7. [Content Mirroring](#content-mirroring)
-8. [OpenShift Installation](#openshift-installation)
-9. [Post-Installation](#post-installation)
-10. [Troubleshooting](#troubleshooting)
-11. [References](#references)
+3. [OpenShift Tools Installation](#openshift-tools-installation)
+4. [Mirror Registry Setup](#mirror-registry-setup)
+5. [Content Mirroring](#content-mirroring)
+6. [User Transfer Workflows](#user-transfer-workflows)
+7. [OpenShift Installation](#openshift-installation)
+8. [Post-Installation](#post-installation)
+9. [Troubleshooting](#troubleshooting)
+10. [References](#references)
 
 ## Overview
 
-This guide walks you through creating a complete disconnected OpenShift installation environment:
+This guide walks you through setting up disconnected OpenShift content mirroring using oc-mirror:
 
-- **AWS Infrastructure**: Bastion host with proper networking
-- **Mirror Registry**: Local Quay registry for container images
-- **Content Mirroring**: OpenShift release images and operators
+- **Mirror Registry**: Self-hosted Quay container registry
+- **Content Mirroring**: OpenShift release images and operators using oc-mirror v2
+- **User Transfer Workflows**: Enterprise-grade content handoff scenarios  
 - **Disconnected Installation**: Air-gapped OpenShift cluster deployment
 
 ### What You'll Build
-- 🖥️ **Bastion Host**: RHEL 10 instance with all required tools
-- 🗃️ **Mirror Registry**: Self-hosted container registry
-- 📦 **Mirrored Content**: OpenShift 4.19.2 release and operators
+- 🗃️ **Mirror Registry**: Self-hosted container registry for disconnected environments
+- 📦 **Mirrored Content**: OpenShift 4.19.2 release images and operators
+- 👥 **User Workflows**: Content transfer and handoff procedures
 - ☁️ **OpenShift Cluster**: Disconnected cluster using mirrored content
+
+> 📋 **Infrastructure Setup:** If you need to set up lab infrastructure (bastion host, networking, etc.), see the [AWS Lab Infrastructure Setup Guide](aws-lab-infrastructure.md) for platform-specific instructions.
 
 ## Prerequisites
 
 ### Required Access
-- Access to Red Hat Demo Platform
 - Valid Red Hat account with OpenShift pull secret access
-- SSH client for connecting to EC2 instances
-- Basic understanding of AWS EC2 and networking concepts
+- Access to [Red Hat Customer Portal](https://console.redhat.com/) for downloading pull secrets
+- SSH access to your Linux system (if using remote host)
 
 ### Technical Requirements
-- AWS Demo Environment (provided via Red Hat Demo Platform)
-- 500+ GB storage on bastion for mirroring operations (provided in AWS Demo Environment)
-- Stable internet connection for initial content download
+- **Linux System**: RHEL 9/10, CentOS Stream, or compatible Linux distribution
+- **Storage**: 500+ GB available disk space for mirroring operations
+- **Memory**: 8+ GB RAM recommended for oc-mirror operations
+- **Network**: Stable internet connection for initial content download
+- **Container Runtime**: Podman 4.0+ installed and configured
+- **Tools**: Git, curl, wget, tar, and basic command-line utilities
 
-## AWS Environment Setup
-
-### 1. Create AWS Demo Environment
-
-Navigate to the Red Hat Demo Platform and provision your AWS environment:
-
-**🔗 Demo Platform URL:**
-```
-https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte.sandbox-open.prod&utm_source=webapp&utm_medium=share-link
-```
-
-**Configuration Settings:**
-- **Purpose:** Practice / Enablement
-- **Training Type:** Conduct internal training  
-- **Duration:** Auto-stop, Auto-destroy (1 week)
-
-> ⚠️ **Important:** Keep the demo environment page open for AWS credential access throughout the setup process
-
-### 2. AWS Console Access
-
-1. **Copy the AWS Web Console URL** from the demo environment page
-2. **Open this URL in a new browser window**
-3. **Log into AWS using the Web Console Credentials** from the demo environment page
-4. **Navigate to required AWS services** using Search at the top, with each service in a new tab:
-   - **EC2:** Instance management and configuration
-   - **Route53:** DNS configuration for the bastion host
-
-### 3. Network Infrastructure Setup
-
-#### Create Default VPC (if needed)
-1. Navigate to: [VPC Console - Create Default VPC](https://us-east-2.console.aws.amazon.com/vpc/home?region=us-east-2#CreateDefaultVpc:)
-2. Click **"Create Default VPC"**
-3. Wait for creation to complete
-
-## Bastion Host Configuration
-
-### 1. Launch EC2 Instance
-
-#### Instance Configuration
-1. In the EC2 Console, click **"Launch instance"**
-2. Use the wizard to configure the following settings:
-
-| Setting | Value | Notes |
-|---------|-------|-------|
-| **Name** | `bastion` | Descriptive name for identification |
-| **OS** | Red Hat Enterprise Linux 10 | Latest RHEL version |
-| **Instance Type** | `t2.large` | Minimum for mirroring operations |
-| **Key Pair** | Create new or select existing | Download and save securely |
-| **Network** | Default VPC and subnet | Use previosly Default created VPC |
-| **Storage** | 1x 1024 GiB (gp3) | Required for mirroring operations |
-
-
-3. Click **"Launch instance"**
-
-### 2. Security Group Configuration
-
-Configure inbound rule to allow access to mirror registry:
-
-1. **Select your bastion instance** from the EC2 console
-2. Navigate to the **"Security"** tab
-3. **Click on the currently applied Security Group** link (usually `launch-wizard-1`)
-4. Click **"Edit inbound rules"**
-5. Click **"Add rule"** and use the following settings:
-   - **Type:** Custom TCP
-   - **Port Range:** 8443
-   - **Source:** 0.0.0.0/0 (for lab/testing only - restrict in production)
-6. Click **"Save Rules"**
-
-### 3. DNS Configuration
-
-Set up DNS record for your bastion host:
-
-1. **Copy the public IP address** from your EC2 instance details
-2. **Navigate to the Route53 console**
-3. **Click Hosted zones from the sidebar menu**
-4. **Select your hosted zone** (e.g. `sandboxXXX.opentlc.com`)
-5. **Click "Create record" and using the following settings**:
-   - **Record Name:** `bastion`
-   - **Record Type:** A
-   - **Value:** [Your bastion EC2 instance's public IP]
-6. **Click "Create records"**
-
-### 4. Connect to Bastion Host
-
-#### SSH Connection
-```bash
-# Replace with your actual key file and IP address
-ssh -i ~/.ssh/your-key.pem ec2-user@[BASTION-PUBLIC-IP]
-
-# Alternative: Use the public DNS name
-ssh -i ~/.ssh/your-key.pem ec2-user@bastion.sandboxXXX.opentlc.com
-```
-
-### 5. Initial System Setup
-
-Once connected to your bastion host, perform initial configuration:
+### System Preparation
+Before starting, ensure your Linux system has:
 
 ```bash
-# Set the hostname (replace XXX with your sandbox number)
-sudo hostnamectl hostname bastion.sandboxXXX.opentlc.com
+# Install required packages (RHEL/CentOS)
+sudo dnf install -y podman git jq vim wget curl
 
-# Install required packages
-sudo dnf install -y podman git jq vim wget
-
-# Verify installation
+# Verify installations
 podman --version
 git --version
 ```
+
+#### Set System Hostname
+```bash
+# Set a proper hostname for your system (replace with your desired hostname)
+sudo hostnamectl set-hostname mirror-registry.example.com
+
+# Verify hostname is set
+hostname
+```
+
+#### Configure Local Firewall
+Configure the firewall to allow inbound access to the registry:
+
+```bash
+# Allow HTTP traffic (port 80)
+sudo firewall-cmd --permanent --add-port=80/tcp
+
+# Allow HTTPS traffic (port 443)  
+sudo firewall-cmd --permanent --add-port=443/tcp
+
+# Allow mirror registry traffic (port 8443)
+sudo firewall-cmd --permanent --add-port=8443/tcp
+
+# Reload firewall to apply changes
+sudo firewall-cmd --reload
+
+# Verify firewall rules
+sudo firewall-cmd --list-ports
+```
+
+> 🛡️ **Security Note:** These firewall rules allow access from any source. In production environments, restrict access to specific IP ranges using `--source=IP_RANGE/CIDR` instead of opening ports globally.
 
 ## OpenShift Tools Installation
 
@@ -254,7 +191,7 @@ podman login https://$(hostname):8443 \
 ### 4. Verify Registry Access
 
 Test registry access via web browser:
-- **Navigate to your registry URL:** e.g. `https://bastion.sandboxXXX.opentlc.com:8443`
+- **Navigate to your registry URL:** e.g. `https://<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443`
 - **Login with your credentials** from the installation
 - **Verify the registry interface loads**
 
@@ -288,6 +225,10 @@ cd ~/oc-mirror-hackathon/oc-mirror-master/
 > - `content/.cache/` - Downloaded content cache
 > - `.oc-mirror/` - Metadata and state information
 > - `content/` - Mirrored content ready for upload
+
+## User Transfer Workflows
+
+This section covers advanced workflows for transferring mirrored content between different users or systems, commonly used in enterprise environments with role separation.
 
 ### Transfer Content Between Hosts (Optional)
 
@@ -358,7 +299,7 @@ ls -la ~/.ssh/id_ed25519*
 cat ~/.config/containers/auth.json
 
 # Extract registry-specific authentication for install config
-# Format needed: {"auths": {"bastion.sandboxXXX.opentlc.com:8443": {"auth": "BASE64_ENCODED_CREDENTIALS"}}}
+# Format needed: {"auths": {"<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443": {"auth": "BASE64_ENCODED_CREDENTIALS"}}}
 ```
 
 ### 2. Create Installation Configuration
@@ -371,18 +312,19 @@ cd ~/oc-mirror-hackathon/ocp
 openshift-install create install-config
 ```
 
-**Provide the following information:**
+**Provide the following information based on your cloud platform:**
 
-| Parameter | Value | Source |
-|-----------|-------|--------|
+| Parameter | Example Value | Notes |
+|-----------|---------------|-------|
 | **SSH Public Key** | `~/.ssh/id_ed25519.pub` | Generated above |
-| **Platform** | AWS | Your cloud provider |
-| **AWS Access Key ID** | From demo.redhat.com | Demo platform credentials |
-| **AWS Secret Access Key** | From demo.redhat.com | Demo platform credentials |
-| **Region** | us-east-1 | Or your preferred region |
-| **Base Domain** | sandboxXXX.opentlc.com | Your demo environment domain |
+| **Platform** | AWS, Azure, GCP, vSphere, etc. | Your cloud/infrastructure provider |
+| **Platform Credentials** | Various | Specific to your cloud provider |
+| **Region/Location** | us-east-1, eastus, etc. | Provider-specific region |
+| **Base Domain** | example.com | Your DNS domain for the cluster |
 | **Cluster Name** | ocp | Descriptive cluster name |
 | **Pull Secret** | Registry auth JSON | From your auth.json file |
+
+> 📋 **Platform-Specific Setup:** For detailed cloud-specific configuration, refer to the [OpenShift Installation Documentation](https://docs.openshift.com/container-platform/latest/installing/) for your specific platform.
 
 ### 3. Configure Disconnected Installation
 
@@ -398,12 +340,14 @@ vi install-config.yaml
 ```yaml
 imageDigestSources:
   - mirrors:
-    - bastion.sandboxXXX.opentlc.com:8443/openshift/release
+    - <YOUR-MIRROR-REGISTRY-HOSTNAME>:8443/openshift/release
     source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
   - mirrors:
-    - bastion.sandboxXXX.opentlc.com:8443/openshift/release-images
+    - <YOUR-MIRROR-REGISTRY-HOSTNAME>:8443/openshift/release-images
     source: quay.io/openshift-release-dev/ocp-release
 ```
+
+> 🔧 **Replace `<YOUR-MIRROR-REGISTRY-HOSTNAME>`** with your actual mirror registry hostname/IP address.
 
 #### Add Additional Trust Bundle
 Include the registry certificate in the installation configuration:
@@ -568,9 +512,9 @@ oc describe node | grep -i registry
 **Symptoms:** Cannot access registry web interface or authentication fails
 
 **Solutions:**
-- Verify security group allows port 8443
-- Confirm DNS resolution: `nslookup bastion.sandboxXXX.opentlc.com`
-- Check certificate trust: `curl -I https://bastion.sandboxXXX.opentlc.com:8443`
+- Verify firewall allows port 8443 (check iptables/firewalld/security groups)
+- Confirm DNS resolution: `nslookup <YOUR-MIRROR-REGISTRY-HOSTNAME>`
+- Check certificate trust: `curl -I https://<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443`
 - Verify registry is running: `podman ps`
 
 #### 2. Authentication Failures
@@ -580,7 +524,7 @@ oc describe node | grep -i registry
 - Verify pull secret format and encoding
 - Confirm registry credentials are correct
 - Check auth.json file permissions: `chmod 600 ~/.config/containers/auth.json`
-- Re-login to registry: `podman login https://bastion.sandboxXXX.opentlc.com:8443`
+- Re-login to registry: `podman login https://<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443`
 
 #### 3. Mirroring Timeouts or Failures
 **Symptoms:** Downloads fail or timeout during mirroring
@@ -636,7 +580,7 @@ podman ps -a
 podman logs [registry-container-id]
 
 # Test registry connectivity
-curl -k https://bastion.sandboxXXX.opentlc.com:8443/v2/
+curl -k https://<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443/v2/
 ```
 
 #### OpenShift Diagnostics
@@ -671,7 +615,7 @@ oc describe pod [pod-name] | grep -i pull
 #### Restart Mirror Registry
 ```bash
 cd ~/oc-mirror-hackathon/mirror-registry
-./mirror-registry install --quayHostname bastion.sandboxXXX.opentlc.com
+./mirror-registry install --quayHostname <YOUR-MIRROR-REGISTRY-HOSTNAME>
 ```
 
 #### Clean and Restart Mirroring

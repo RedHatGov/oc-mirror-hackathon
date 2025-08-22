@@ -2,27 +2,46 @@
 
 This directory contains bug reports and RFEs (Request for Enhancement) discovered during operational testing of oc-mirror v2 air-gapped scenarios.
 
-## Summary of Issues
+## 📁 Issue Categories
 
-Based on testing documented in `../operational_patterns.md`, the following critical issues were identified:
+### **🚀 [enhancements/](enhancements/)**
+Feature requests and improvement proposals
+- Archive management improvements
+- Dry-run capabilities for delete operations
+- User experience enhancements
+
+### **🐛 [issues/](issues/)**  
+Bug reports and technical problems
+- Context timeout during mirroring
+- Misleading log output
+- Poor error messaging
+
+### **📖 [documentation/](documentation/)**
+Documentation gaps and improvements
+- Missing procedures and guides
+- Inaccurate or outdated content
+
+## Summary of Critical Issues
+
+Based on testing documented in `../docs/workflows/operational-patterns.md`, the following critical issues were identified:
 
 ## 🚨 Critical Bugs
 
-### 1. Misleading Log Output ([misleading-log-output.md](./misleading-log-output.md))
+### 1. Misleading Log Output ([misleading-log-output.md](./issues/misleading-log-output.md))
 - **Type:** Bug
 - **Priority:** Major  
 - **Issue:** oc-mirror v2 logs claim complete content when archives contain only differential content
 - **Impact:** Customers transfer incomplete archive sets, causing failed air-gapped operations
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 2. Poor Error Messaging ([poor-error-messaging.md](./poor-error-messaging.md))
+### 2. Poor Error Messaging ([poor-error-messaging.md](./issues/poor-error-messaging.md))
 - **Type:** Bug
 - **Priority:** Major
 - **Issue:** Cryptic error messages when cumulative content is missing  
 - **Impact:** Extended troubleshooting time, increased support cases
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 3. Context Timeout During Mirroring ([context-timeout-during-mirroring.md](./context-timeout-during-mirroring.md))
+### 3. Context Timeout During Mirroring ([context-timeout-during-mirroring.md](./issues/context-timeout-during-mirroring.md))
 - **Type:** Bug
 - **Priority:** High
 - **Issue:** oc-mirror v2 fails with "context deadline exceeded" during large image downloads
@@ -31,21 +50,21 @@ Based on testing documented in `../operational_patterns.md`, the following criti
 
 ## 📋 Enhancement Requests
 
-### 4. Documentation Gap ([documentation-gap.md](./documentation-gap.md))
+### 4. Documentation Gap ([documentation-gap.md](./documentation/documentation-gap.md))
 - **Type:** RFE
 - **Priority:** High
 - **Issue:** Missing operational guidance for differential archive behavior
 - **Impact:** Customer confusion, failed deployments, poor planning
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 5. Archive Management ([archive-management-rfe.md](./archive-management-rfe.md))
+### 5. Archive Management ([archive-management.md](./enhancements/archive-management.md))
 - **Type:** RFE  
 - **Priority:** Normal
 - **Issue:** Lack of versioning, metadata, and operational tools for archive management
 - **Impact:** Difficult enterprise adoption, limited rollback capabilities
 - **Template Source:** [OCPBUGS-54587](https://issues.redhat.com/browse/OCPBUGS-54587)
 
-### 6. Operational User Experience ([operational-ux-rfe.md](./operational-ux-rfe.md))
+### 6. Operational User Experience ([operational-ux.md](./enhancements/operational-ux.md))
 - **Type:** RFE
 - **Priority:** Normal  
 - **Issue:** Poor UX for air-gapped operations, insufficient guidance
@@ -57,8 +76,8 @@ Based on testing documented in `../operational_patterns.md`, the following criti
 ## Testing Evidence
 
 All issues are backed by concrete testing evidence documented in:
-- `../operational_patterns.md` - Detailed analysis and findings
-- `../airgap-testing.md` - Air-gapped scenario testing  
+- `../docs/workflows/operational-patterns.md` - Detailed analysis and findings
+- `../docs/guides/airgap-testing.md` - Air-gapped scenario testing  
 - Configuration artifacts included in operational patterns document
 
 ## Reproducibility
