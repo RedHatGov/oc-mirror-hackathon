@@ -37,7 +37,7 @@ Reference materials and command documentation:
 - **[improvements-summary.md](docs/reference/improvements-summary.md)** - Project improvements
 
 ### **🛠️ Tools**
-- **`collect_ocp_simple`** - Simplified tool collection script (in repository root)
+- **`collect_ocp`** - Simplified tool collection script (in repository root)
 
 ## Tools Included
 

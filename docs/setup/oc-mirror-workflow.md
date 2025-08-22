@@ -106,10 +106,10 @@ Execute the simplified collection script:
 
 ```bash
 # Edit the OpenShift version if needed (default is "stable")
-# Edit line 14 in collect_ocp_simple: OPENSHIFT_VERSION="4.19.2" 
+# Edit line 14 in collect_ocp: OPENSHIFT_VERSION="4.19.2" 
 
 # Run the collection script
-./collect_ocp_simple
+./collect_ocp
 ```
 
 **This script downloads and installs:**

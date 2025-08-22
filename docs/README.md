@@ -45,7 +45,7 @@ Reference materials and command documentation
 
 ## 🛠️ Tools
 
-- **`../collect_ocp_simple`** - Simplified tool collection script (in repository root)
+- **`../collect_ocp`** - Simplified tool collection script (in repository root)
 - **oc-mirror** - Content mirroring for disconnected installations
 - **Mirror registry** - Local Quay container registry
 - **OpenShift installer** - Cluster deployment tools

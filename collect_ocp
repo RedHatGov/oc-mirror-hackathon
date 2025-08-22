@@ -4,7 +4,7 @@
 # Simple OpenShift Collection Script
 #==============================================================================
 # Downloads OpenShift tools and installs to PATH
-# Usage: Edit OPENSHIFT_VERSION variable below, then run: ./collect_ocp_simple
+# Usage: Edit OPENSHIFT_VERSION variable below, then run: ./collect_ocp
 #==============================================================================
 
 set -e

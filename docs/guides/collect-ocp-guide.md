@@ -1,4 +1,4 @@
-# collect_ocp_simple - Quick Reference Guide
+# collect_ocp - Quick Reference Guide
 
 A simplified tool collection script for OpenShift disconnected installations.
 
@@ -8,7 +8,7 @@ A simplified tool collection script for OpenShift disconnected installations.
 
 Edit the version in the script:
 ```bash
-# Edit line 14 in collect_ocp_simple
+# Edit line 14 in collect_ocp
 OPENSHIFT_VERSION="stable"        # For latest stable release
 # OR
 OPENSHIFT_VERSION="4.19.2"       # For specific version
@@ -17,7 +17,7 @@ OPENSHIFT_VERSION="4.19.2"       # For specific version
 ### 2. Run the Script
 
 ```bash
-./collect_ocp_simple
+./collect_ocp
 ```
 
 **What it does:**
@@ -44,7 +44,7 @@ downloads/
 
 ### Connected System:
 ```bash
-./collect_ocp_simple
+./collect_ocp
 ```
 
 ### Transfer to Air-Gapped System:
@@ -70,7 +70,7 @@ cd downloads
 ### Latest Stable
 ```bash
 OPENSHIFT_VERSION="stable"
-./collect_ocp_simple
+./collect_ocp
 # Creates: openshift-install-linux-stable.tar.gz
 # Installs: Current stable version (e.g., 4.19.7)
 ```
@@ -78,7 +78,7 @@ OPENSHIFT_VERSION="stable"
 ### Specific Version
 ```bash
 OPENSHIFT_VERSION="4.19.2"
-./collect_ocp_simple  
+./collect_ocp  
 # Creates: openshift-install-linux-4.19.2.tar.gz
 # Installs: Exact version 4.19.2
 ```
@@ -95,9 +95,9 @@ butane --help
 
 ## 🆚 vs. Old collect_ocp Script
 
-| Feature | Old `collect_ocp` | New `collect_ocp_simple` |
-|---------|------------------|-------------------------|
-| **Lines of code** | 567 lines | 73 lines (87% reduction) |
+| Feature | Old `collect_ocp` | New `collect_ocp` |
+|---------|------------------|-------------------|
+| **Lines of code** | 567 lines | 65 lines (88% reduction) |
 | **Version support** | Complex logic | Simple `OPENSHIFT_VERSION="4.19.2"` |
 | **File naming** | Generic | Version-stamped |
 | **Organization** | Scattered | All in `downloads/` |
