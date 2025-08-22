@@ -1,6 +1,6 @@
 # oc-mirror Hackathon Repository
 
-This repository contains comprehensive guides and tools for working with OpenShift disconnected installations using oc-mirror.
+This repository contains a series of guides and templates to prepare for the oc-mirror hack-a-thon.
 
 ## Getting Started
 
