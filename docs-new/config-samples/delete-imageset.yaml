@@ -1,0 +1,63 @@
+# Delete ImageSet Configuration - Safe Version Cleanup
+# Configuration for safely removing old OpenShift versions while preserving current/future versions
+# CRITICAL: Only specify versions TO DELETE, not versions to keep
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: DeleteImageSetConfiguration
+delete:                           # Note: 'delete' section, not 'mirror'
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.2          # Oldest version TO DELETE
+      maxVersion: 4.19.6          # Newest version TO DELETE
+      # IMPORTANT: Do NOT include current cluster version (e.g., 4.19.7)
+    graph: true                   # Required for platform deletions
+    
+    # Architecture specification (must match original mirror)
+    architectures:
+    - amd64                       # x86_64 architecture
+
+# SAFETY GUIDELINES:
+# 1. Check current cluster version: oc get clusterversion
+# 2. Only delete versions OLDER than current cluster version
+# 3. Consider future upgrade paths - don't delete intermediate versions
+# 4. Test deletion configuration in non-production environment first
+
+# EXAMPLE SCENARIOS:
+
+# Scenario 1: Current cluster is 4.19.7, safe to delete 4.19.2-4.19.6
+# - minVersion: 4.19.2, maxVersion: 4.19.6
+
+# Scenario 2: Current cluster is 4.19.5, keep recent versions for upgrade path
+# - minVersion: 4.19.2, maxVersion: 4.19.3 (conservative approach)
+
+# Scenario 3: Multi-cluster environment with minimum version 4.19.6
+# - Only delete versions older than ALL clusters' minimum version
+# - minVersion: 4.19.2, maxVersion: 4.19.5
+
+# OPTIONAL: Operator cleanup (uncomment if needed)
+# operators:
+# - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
+#   packages:
+#   - name: old-operator-version
+#   - name: deprecated-operator
+
+# OPTIONAL: Additional image cleanup (uncomment if needed)  
+# additionalImages:
+# - name: registry.redhat.io/ubi8/ubi:old-version
+# - name: custom-registry/deprecated-image:v1.0
+
+# WORKSPACE REQUIREMENT:
+# Delete operations MUST use original mirror workspace containing:
+# - Cincinnati graph data in working-dir/hold-release/
+# - Use: --workspace file://path-to-original-workspace
+
+# EXECUTION PATTERN:
+# 1. Generate plan: oc mirror delete -c this-config.yaml --generate --workspace file://original-workspace docker://registry --v2
+# 2. Review plan: cat workspace/working-dir/delete/delete-images.yaml  
+# 3. Execute: oc mirror delete --delete-yaml-file workspace/working-dir/delete/delete-images.yaml docker://registry --v2
+
+# POST-DELETION CLEANUP:
+# - Run registry garbage collection to reclaim storage
+# - Verify preserved versions still work
+# - Update documentation with deletion record

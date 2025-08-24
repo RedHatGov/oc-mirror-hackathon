@@ -1,0 +1,89 @@
+# ImageSet Configuration - Platform + Core Operators
+# OpenShift platform releases with essential operators for enterprise environments
+# Use this for comprehensive mirror including commonly needed operators
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19           # OpenShift release channel
+      minVersion: 4.19.2          # Oldest version to include  
+      maxVersion: 4.19.7          # Newest version to include
+      type: ocp                   # OpenShift Container Platform
+    graph: true                   # Include Cincinnati graph data (required!)
+    
+    # Architecture specification
+    architectures:
+    - amd64                       # x86_64 architecture
+
+  # Core operators commonly needed in enterprise environments
+  operators:
+  - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+    packages:
+    
+    # Storage operators
+    - name: odf-operator          # OpenShift Data Foundation
+      channels:
+      - name: stable-4.19
+        minVersion: 4.19.0
+    - name: local-storage-operator
+      channels:
+      - name: stable
+    
+    # Network operators  
+    - name: cluster-network-addons-operator
+      channels:
+      - name: stable
+    - name: metallb-operator      # Load balancer for bare metal
+      channels:
+      - name: stable
+        
+    # Security operators
+    - name: rhacs-operator        # Red Hat Advanced Cluster Security
+      channels:
+      - name: stable
+    - name: compliance-operator   # OpenShift compliance scanning
+      channels:
+      - name: stable
+        
+    # Monitoring and observability
+    - name: cluster-logging       # OpenShift logging stack
+      channels:
+      - name: stable
+    - name: elasticsearch-operator
+      channels:
+      - name: stable
+    - name: jaeger-product        # Distributed tracing
+      channels:
+      - name: stable
+        
+    # Platform operators
+    - name: web-terminal          # OpenShift web terminal
+      channels:  
+      - name: fast
+    - name: cluster-autoscaler    # Node autoscaling
+      channels:
+      - name: stable
+
+# Storage configuration for larger mirrors
+storageConfig:
+  # Registry connection configuration  
+  registry:
+    imageURL: docker://localhost:8443/oc-mirror/metadata:latest
+    skipTLS: false                # Set to true for insecure registries
+    
+  # Local storage configuration
+  local:
+    path: ./oc-mirror-workspace   # Workspace directory
+
+# Performance optimization for operator-heavy mirrors
+mirror:
+  # Archive size limit for transport
+  archiveSize: 8                  # GB per archive file (larger for operators)
+  
+  # Parallel processing (adjust based on system and network capabilities)
+  parallelImageLimit: 15          # Higher for operator mirrors
+  
+  # Operator-specific settings
+  operatorPolicy: semver-skippatch # Allow skipping patch versions
