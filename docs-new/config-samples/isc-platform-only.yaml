@@ -1,0 +1,49 @@
+# ImageSet Configuration - Platform Only
+# Basic OpenShift platform releases without operators or additional images
+# Use this for minimal mirror requirements or as a starting point
+
+apiVersion: mirror.openshift.io/v2alpha1
+kind: ImageSetConfiguration
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19           # OpenShift release channel
+      minVersion: 4.19.2          # Oldest version to include  
+      maxVersion: 4.19.7          # Newest version to include
+      type: ocp                   # OpenShift Container Platform
+    graph: true                   # Include Cincinnati graph data (required!)
+    
+    # Optional: Additional release channels (uncomment if needed)
+    # - name: fast-4.19
+    #   minVersion: 4.19.7
+    #   maxVersion: 4.19.8
+    #   type: ocp
+    
+    # Architecture specification (optional - defaults to current system)
+    architectures:
+    - amd64                       # x86_64 architecture
+
+# Storage configuration for large mirrors
+storageConfig:
+  # Registry connection configuration  
+  registry:
+    imageURL: docker://localhost:8443/oc-mirror/metadata:latest
+    skipTLS: false                # Set to true for insecure registries
+    
+  # Local storage configuration
+  local:
+    path: ./oc-mirror-workspace   # Workspace directory
+
+# Performance optimization (optional)
+mirror:
+  # Archive size limit for transport (optional)
+  # archiveSize: 4                # GB per archive file
+  
+  # Parallel processing (adjust based on system capabilities)
+  # parallelImageLimit: 10        # Concurrent image downloads
+  
+  # Blob storage configuration (optional)
+  # blobsStorage:
+  #   s3:
+  #     region: us-east-1
+  #     bucket: oc-mirror-blobs
