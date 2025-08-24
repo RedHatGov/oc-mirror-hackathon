@@ -1,1 +1,0 @@
-oc-mirror -c imageset-config.yaml --from file://content docker://$(hostname):8443 --v2

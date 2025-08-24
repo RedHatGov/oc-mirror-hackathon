@@ -120,7 +120,7 @@ Execute the simplified collection script:
 - ⚙️ **butane** - Machine configuration generation tool
 
 **For disconnected installations:**
-The script also creates `downloads/install.sh` for easy deployment on air-gapped systems:
+
 1. Copy the entire `downloads/` directory to your disconnected environment
 2. Run `cd downloads && ./install.sh` to install all tools
 
@@ -150,7 +150,7 @@ Navigate to the mirror registry directory and run the installer:
 
 ```bash
 # Change to mirror registry directory
-cd ~/oc-mirror-hackathon/mirror-registry
+cd ~/oc-mirror-hackathon/downloads/mirror-registry
 
 # Install mirror registry
 ./mirror-registry install 
@@ -220,7 +220,7 @@ Execute the first mirroring stage:
 cd ~/oc-mirror-hackathon/oc-mirror-master/
 
 # Execute local mirroring
-./oc-mirror.sh
+./oc-mirror-to-disk.sh
 ```
 
 **This command:**
@@ -308,6 +308,11 @@ cat ~/.config/containers/auth.json
 
 # Extract registry-specific authentication for install config
 # Format needed: {"auths": {"<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443": {"auth": "BASE64_ENCODED_CREDENTIALS"}}}
+
+jq -c --arg reg "$(hostname):8443" '
+  .auths[$reg].auth as $token
+  | {"auths": { ($reg + ":8443"): {"auth": $token} }}
+' ~/.config/containers/auth.json
 ```
 
 ### 2. Create Installation Configuration
@@ -363,14 +368,20 @@ Include the registry certificate in the installation configuration:
 ```bash
 # Get the registry certificate
 cat ~/quay-install/quay-rootCA/rootCA.pem
-```
 
-**Add the additionalTrustBundle section to install-config.yaml:**
-```yaml
+# Example install-config.yaml format
+
 additionalTrustBundle: |
   -----BEGIN CERTIFICATE-----
   [PASTE YOUR CERTIFICATE CONTENT HERE]
   -----END CERTIFICATE-----
+```
+
+**Add the additionalTrustBundle section to install-config.yaml:**
+```yaml
+
+{ echo "additionalTrustBundle: |"; sed 's/^/  /' ~/quay-install/quay-rootCA/rootCA.pem; } >> install-config.yaml
+
 ```
 
 ### 4. Deploy the Cluster
@@ -631,7 +642,7 @@ cd ~/oc-mirror-hackathon/mirror-registry
 # Remove cache and restart
 rm -rf ~/.oc-mirror/
 cd ~/oc-mirror-hackathon/oc-mirror-master/
-./oc-mirror.sh
+./oc-mirror-to-disk.sh
 ```
 
 #### Reset Installation
@@ -670,7 +681,7 @@ df -h && free -h && podman ps
 
 # Mirror content
 cd ~/oc-mirror-hackathon/oc-mirror-master/
-./oc-mirror.sh && ./oc-mirror-to-registry.sh
+./oc-mirror-to-disk.sh && ./oc-mirror-to-registry.sh
 
 # Deploy cluster
 openshift-install create cluster --log-level debug

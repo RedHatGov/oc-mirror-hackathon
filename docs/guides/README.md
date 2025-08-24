@@ -7,6 +7,8 @@ Step-by-step guides for specific oc-mirror tasks and scenarios.
 | File | Description | Use Case |
 |------|-------------|----------|
 | **[collect-ocp-guide.md](collect-ocp-guide.md)** | Simplified tool collection script | Getting started with OpenShift tools |
+| **[cache-consistency-guide.md](cache-consistency-guide.md)** | Cache architecture & consistency | **Critical** for production deployments |
+| **[cluster-upgrade-guide.md](cluster-upgrade-guide.md)** | Disconnected cluster upgrades | Upgrading OpenShift using mirrored content |
 | **[operator-mirroring.md](operator-mirroring.md)** | Mirror OpenShift operators | Adding operators to disconnected environments |
 | **[image-deletion.md](image-deletion.md)** | Delete images from registries | Cleanup and maintenance operations |
 | **[airgap-testing.md](airgap-testing.md)** | Test air-gapped deployments | Validation of disconnected installations |
