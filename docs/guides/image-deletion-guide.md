@@ -226,35 +226,92 @@ Before executing the deletion, confirm:
 
 ### 3.2 Execute Deletion
 
-After thorough review, execute the deletion using the generated plan:
+After thorough review, execute the deletion using our standardized deletion script:
 
 ```bash
-# Execute deletion using the generated and reviewed plan
-oc mirror delete \
-    --delete-yaml-file content/working-dir/delete/delete-images.yaml \
-    docker://$(hostname):8443 \
-    --v2 \
-    --cache-dir .cache
+# Execute deletion using our safe, guided script
+./oc-mirror-delete-execute.sh
 ```
+
+**Interactive Execution Process:**
+
+The script provides comprehensive safety checks and guidance:
+
+```
+🚨 DANGER: About to execute image deletion!
+🎯 Target registry: bastion.sandbox762.opentlc.com:8443
+📄 Deletion plan: content/working-dir/delete/delete-images.yaml
+⚠️  WARNING: This will PERMANENTLY DELETE images from registry!
+
+🔍 Deletion plan found - showing summary:
+📊 Images to be deleted: 847
+💾 Plan size: 221K
+
+⏰ FINAL CONFIRMATION REQUIRED
+This operation will:
+  • Delete OpenShift versions 4.19.2 through 4.19.6 from registry
+  • Permanently remove image manifests and layers  
+  • Keep local cache (119GB) for performance - will NOT be automatically cleaned
+  • Free up registry storage space (requires registry GC afterward)
+  • Preserve current version 4.19.7 and later
+
+🛑 Press Ctrl+C now to abort, or Enter to proceed with deletion...
+```
+
+**What the Script Does:**
+- ✅ **Verifies deletion plan exists** before proceeding
+- ✅ **Shows deletion summary** (image count, plan size)
+- ✅ **Requires explicit confirmation** from user
+- ✅ **Explains cache behavior** (preserved for performance)
+- ✅ **Provides post-deletion guidance** for next steps
 
 ### 3.3 Monitor Deletion Progress
 
+Once you confirm deletion, the script executes the actual `oc mirror delete` command:
+
 **Expected Output:**
 ```
-[INFO] Starting deletion process...
-[INFO] Removing manifests from registry...
-[INFO] Cleaning registry storage...
-[INFO] Updating cache...
+🗑️ Executing deletion plan...
+📊 This may take several minutes depending on registry size
 
-✅ Deletion completed successfully!
+[INFO] 👋 Hello, welcome to oc-mirror
+[INFO] ⚙️  setting up the environment for you...
+[INFO] 🔀 workflow mode: diskToMirror / delete  
+[INFO] 🗑️ deleting images from registry...
+[INFO] 📄 Processing deletion plan...
+[INFO] 🧹 Removing image manifests...
+[INFO] ✅ Deletion completed successfully
+[INFO] 👋 Goodbye, thank you for using oc-mirror
+
+✅ Deletion execution completed!
+🧹 IMPORTANT: Run registry garbage collection to reclaim storage:
+   • For Quay: Log into registry and run GC from admin panel
+   • For mirror-registry: sudo podman exec -it quay-app /bin/bash -c 'registry-garbage-collect'
 ```
 
-### 3.4 Verify Deletion Completion
+### 3.4 Post-Deletion Guidance
 
-The deletion process should complete without errors. Look for:
-- ✅ No error messages about missing permissions
-- ✅ Confirmation that manifests were removed
-- ✅ Cache cleanup completed
+The script automatically provides comprehensive next steps and options:
+
+```
+💡 Next steps:
+   • Verify deleted versions are gone: oc adm release info $(hostname):8443/openshift/release-images:4.19.2-x86_64
+   • Check current version still works: oc adm release info $(hostname):8443/openshift/release-images:4.19.7-x86_64  
+   • Monitor registry storage usage: df -h /opt/quay/
+
+🗂️  Cache Management Options:
+   • Cache size: 119G
+   • Keep cache for future operations (recommended for frequent mirroring)
+   • Manual cleanup if space needed: rm -rf .cache/
+   • Or add --force-cache-delete to this script for automatic cleanup
+```
+
+**Key Benefits of Using the Standardized Script:**
+- ✅ **Built-in safety checks** prevent accidental execution
+- ✅ **Clear progress indication** during deletion process
+- ✅ **Automatic guidance** for post-deletion steps
+- ✅ **Cache management options** clearly explained
+- ✅ **Registry GC reminders** for storage reclamation
 
 ## Step 4: Post-Deletion Verification
 
@@ -264,8 +321,18 @@ Test that the deleted versions are no longer accessible:
 
 ```bash
 # These should now fail (versions deleted)
-oc adm release info $(hostname):8443/openshift/release-images:4.19.2-x86_64 2>&1 | grep -q "not found" && echo "✅ 4.19.2 successfully deleted" || echo "❌ 4.19.2 still present"
-oc adm release info $(hostname):8443/openshift/release-images:4.19.6-x86_64 2>&1 | grep -q "not found" && echo "✅ 4.19.6 successfully deleted" || echo "❌ 4.19.6 still present"
+oc adm release info $(hostname):8443/openshift/release-images:4.19.2-x86_64 2>&1 | grep -q "deleted or has expired" && echo "✅ 4.19.2 successfully deleted" || echo "❌ 4.19.2 still present"
+oc adm release info $(hostname):8443/openshift/release-images:4.19.6-x86_64 2>&1 | grep -q "deleted or has expired" && echo "✅ 4.19.6 successfully deleted" || echo "❌ 4.19.6 still present"
+
+# Alternative: Check all deleted versions at once
+echo "🔍 Checking deleted versions:"
+for version in 4.19.2 4.19.3 4.19.4 4.19.5 4.19.6; do
+    if oc adm release info $(hostname):8443/openshift/release-images:${version}-x86_64 2>&1 | grep -q "deleted or has expired"; then
+        echo "✅ ${version} successfully deleted"
+    else
+        echo "❌ ${version} still present"
+    fi
+done
 ```
 
 ### 4.2 Verify Current Version Is Preserved
@@ -472,20 +539,28 @@ cd oc-mirror-master/
 # 3. Review generated plan (CRITICAL SAFETY STEP)
 cat content/working-dir/delete/delete-images.yaml
 
-# 4. Execute deletion (only after thorough review)
-oc mirror delete \
-    --delete-yaml-file content/working-dir/delete/delete-images.yaml \
-    docker://$(hostname):8443 \
-    --v2 \
-    --cache-dir .cache
+# 4. Execute deletion (only after thorough review)  
+./oc-mirror-delete-execute.sh
+# The script will:
+# - Verify deletion plan exists
+# - Show summary (image count, file size)  
+# - Require explicit confirmation
+# - Execute deletion with progress monitoring
+# - Provide post-deletion guidance and next steps
 
-# 5. Verify deleted versions are gone
-oc adm release info $(hostname):8443/openshift/release-images:4.19.2-x86_64 2>&1 | grep -q "not found" && echo "✅ Deletion successful"
+# 5. Follow script's post-deletion guidance automatically provided
+# Including verification commands and cache management options
+```
 
-# 6. Verify current version is preserved
-oc adm release info $(hostname):8443/openshift/release-images:4.19.7-x86_64
+**Why Use the Standardized Scripts?**
+- ✅ **Built-in safety checks** prevent common mistakes
+- ✅ **Interactive confirmations** for dangerous operations  
+- ✅ **Comprehensive guidance** throughout the process
+- ✅ **Automatic verification** suggestions post-execution
+- ✅ **Cache management** options clearly explained
 
-echo "✅ Image deletion completed successfully!"
+```bash
+echo "✅ Image deletion completed safely with standardized scripts!"
 ```
 
 ---

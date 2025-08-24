@@ -8,6 +8,7 @@ Technical reference materials, command documentation, and project information.
 |------|-------------|------|
 | **[oc-mirror-v2-commands.md](oc-mirror-v2-commands.md)** | Complete oc-mirror v2 command reference | Technical Reference |
 | **[image-deletion.md](image-deletion.md)** | Comprehensive image deletion reference | Technical Reference |
+| **[cache-management.md](cache-management.md)** | Storage optimization and cache lifecycle management | Technical Reference |
 | **[improvements-summary.md](improvements-summary.md)** | Project improvements and changelog | Project Documentation |
 
 ## How to Use Reference Documentation
@@ -24,6 +25,12 @@ Technical reference materials, command documentation, and project information.
   - Configuration examples and syntax
   - Comprehensive troubleshooting guide
   - Command reference and advanced options
+
+- **[cache-management.md](cache-management.md)** - Storage optimization and cache lifecycle management
+  - Cache architecture and behavior patterns
+  - Storage planning and monitoring strategies
+  - Cleanup operations and automation scripts
+  - Performance impact analysis and best practices
 
 ### **Project Information**
 - **[improvements-summary.md](improvements-summary.md)** - Project evolution and improvements
