@@ -311,7 +311,7 @@ cat ~/.config/containers/auth.json
 
 jq -c --arg reg "$(hostname):8443" '
   .auths[$reg].auth as $token
-  | {"auths": { ($reg + ":8443"): {"auth": $token} }}
+  | {"auths": { ($reg): {"auth": $token} }}
 ' ~/.config/containers/auth.json
 ```
 

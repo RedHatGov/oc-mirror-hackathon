@@ -7,6 +7,7 @@ Technical reference materials, command documentation, and project information.
 | File | Description | Type |
 |------|-------------|------|
 | **[oc-mirror-v2-commands.md](oc-mirror-v2-commands.md)** | Complete oc-mirror v2 command reference | Technical Reference |
+| **[image-deletion.md](image-deletion.md)** | Comprehensive image deletion reference | Technical Reference |
 | **[improvements-summary.md](improvements-summary.md)** | Project improvements and changelog | Project Documentation |
 
 ## How to Use Reference Documentation
@@ -16,6 +17,13 @@ Technical reference materials, command documentation, and project information.
   - All available flags and options
   - Usage examples for different scenarios
   - Best practices for command usage
+
+### **Technical References**
+- **[image-deletion.md](image-deletion.md)** - Complete deletion functionality reference
+  - Two-phase deletion process details
+  - Configuration examples and syntax
+  - Comprehensive troubleshooting guide
+  - Command reference and advanced options
 
 ### **Project Information**
 - **[improvements-summary.md](improvements-summary.md)** - Project evolution and improvements
