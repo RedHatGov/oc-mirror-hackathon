@@ -76,11 +76,11 @@ flowchart TD
 
 ## 🚧 **Hackathon Development Status**
 
-All flows are currently under active development for the oc-mirror hackathon:
+Flow development progress for the oc-mirror hackathon:
 
 - **✅ delete.md** - Complete with tested procedures
-- **🚧 mirror-to-disk.md** - Stub created, needs content
-- **🚧 from-disk-to-registry.md** - Stub created, needs content  
-- **🚧 mirror-to-registry.md** - Stub created, needs content
+- **✅ mirror-to-disk.md** - Complete with tested procedures from oc-mirror-workflow
+- **✅ from-disk-to-registry.md** - Complete with tested procedures from oc-mirror-workflow  
+- **✅ mirror-to-registry.md** - Complete with tested procedures and decision guidance
 
-**Goal:** Build out comprehensive, tested flow documentation that hackathon participants can follow successfully.
+**Status:** All core flows complete with comprehensive, tested procedures that hackathon participants can follow successfully.
