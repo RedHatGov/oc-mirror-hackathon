@@ -19,5 +19,5 @@ Essential setup guides to get your oc-mirror environment running.
 After completing the setup guides, explore:
 
 - **[../guides/](../guides/)** - How-to guides for specific tasks
-- **[../workflows/](../workflows/)** - Advanced patterns and procedures
+- **[../reference/workflows/](../reference/workflows/)** - Advanced patterns and procedures
 - **[../reference/](../reference/)** - Command references and technical docs

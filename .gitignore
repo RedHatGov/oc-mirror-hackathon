@@ -6,6 +6,7 @@ mirror-registry/
 oc-mirror-master/content
 oc-mirror-master/.cache 
 oc-mirror-master/*.log
+oc-mirror-master/logs
 ocp/auth/
 ocp/.clusterapi_output/
 ocp/.openshift_install.log

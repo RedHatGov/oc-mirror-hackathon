@@ -19,7 +19,7 @@ Before using these guides, complete the setup process:
 
 ## Related Documentation
 
-- **[../workflows/](../workflows/)** - Advanced operational patterns
+- **[../reference/workflows/](../reference/workflows/)** - Advanced operational patterns
 - **[../reference/](../reference/)** - Command references and technical details
   - **[../reference/image-deletion.md](../reference/image-deletion.md)** - Comprehensive deletion reference
   - **[../reference/operator-mirroring.md](../reference/operator-mirroring.md)** - Complete operator mirroring reference

@@ -11,6 +11,7 @@ Technical reference materials, command documentation, and project information.
 | **[cache-management.md](cache-management.md)** | Storage optimization and cache lifecycle management | Technical Reference |
 | **[operator-mirroring.md](operator-mirroring.md)** | Complete operator mirroring reference | Technical Reference |
 | **[airgap-testing.md](airgap-testing.md)** | Air-gapped deployment testing and validation | Technical Reference |
+| **[workflows/](workflows/)** | Advanced operational patterns and enterprise procedures | Operational Patterns |
 | **[improvements-summary.md](improvements-summary.md)** | Project improvements and changelog | Project Documentation |
 
 ## How to Use Reference Documentation
@@ -46,6 +47,13 @@ Technical reference materials, command documentation, and project information.
   - Test automation and scripting patterns
   - Performance and functionality verification
 
+### **Operational Patterns**
+- **[workflows/](workflows/)** - Advanced operational patterns and enterprise procedures
+  - Sequential mirroring workflows for large-scale deployments
+  - Infrastructure patterns and architecture guidance
+  - Production operational procedures and best practices
+  - Enterprise integration and automation patterns
+
 ### **Project Information**
 - **[improvements-summary.md](improvements-summary.md)** - Project evolution and improvements
   - Recent changes and enhancements
@@ -56,5 +64,5 @@ Technical reference materials, command documentation, and project information.
 
 - **New to oc-mirror?** Start with **[../setup/](../setup/)**
 - **Need specific help?** Check **[../guides/](../guides/)**
-- **Advanced usage?** See **[../workflows/](../workflows/)**
+- **Advanced usage?** See **[workflows/](workflows/)**
 - **Command syntax?** You're in the right place!

@@ -23,7 +23,7 @@ How-to guides for specific tasks
 - Image deletion and cleanup
 - Air-gap testing and validation
 
-### **[⚙️ workflows/](workflows/)**
+### **[⚙️ reference/workflows/](reference/workflows/)**
 Advanced patterns and operational procedures
 - Sequential mirroring workflows
 - Production best practices
@@ -40,7 +40,7 @@ Reference materials and command documentation
 |---------------|----------|
 | Set up a new environment | **[setup/](setup/)** |
 | Learn a specific task | **[guides/](guides/)** |
-| Optimize for production | **[workflows/](workflows/)** |
+| Optimize for production | **[reference/workflows/](reference/workflows/)** |
 | Look up command syntax | **[reference/](reference/)** |
 
 ## 🛠️ Tools
