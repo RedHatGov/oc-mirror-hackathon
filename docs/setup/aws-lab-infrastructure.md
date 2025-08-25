@@ -17,15 +17,15 @@ This guide provides AWS-specific infrastructure setup instructions for the oc-mi
 This guide covers the AWS-specific infrastructure setup needed for the oc-mirror workshop, including the **two-host architecture** required for air-gapped mirroring workflows:
 
 - **AWS Demo Environment**: Red Hat Demo Platform AWS environment
-- **Bastion Host**: RHEL 10 instance for connected mirroring operations
-- **Registry Host**: RHEL 10 instance for disconnected registry operations
+- **Bastion Host**: RHEL 9 instance for connected mirroring operations
+- **Registry Host**: RHEL 9 instance for disconnected registry operations
 - **DNS Configuration**: Route53 DNS records for both hosts
 - **Security Groups**: Firewall rules for mirror registry access
 
 ### What You'll Build
 - 🌐 **AWS Demo Environment**: Sandbox environment with credentials
-- 🖥️ **Bastion Host**: RHEL 10 EC2 instance for mirror-to-disk operations (t2.large, 1TB storage)
-- 🖥️ **Registry Host**: RHEL 10 EC2 instance for from-disk-to-registry operations (t2.large, 1TB storage)
+- 🖥️ **Bastion Host**: RHEL 9 EC2 instance for mirror-to-disk operations (t2.large, 1TB storage)
+- 🖥️ **Registry Host**: RHEL 9 EC2 instance for from-disk-to-registry operations (t2.large, 1TB storage)
 - 🔗 **DNS Records**: Route53 A records for both bastion and registry host access
 - 🛡️ **Security Groups**: Firewall rules for mirror registry access (port 8443)
 
@@ -86,7 +86,7 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 | Setting | Value | Notes |
 |---------|-------|-------|
 | **Name** | `bastion` | Descriptive name for identification |
-| **OS** | Red Hat Enterprise Linux 10 | Latest RHEL version |
+| **OS** | Red Hat Enterprise Linux 9 | Latest stable RHEL version |
 | **Instance Type** | `t2.large` | Minimum for mirroring operations |
 | **Key Pair** | Create new or select existing | Download and save securely |
 | **Network** | Default VPC and subnet | Use previously created Default VPC |
@@ -94,7 +94,7 @@ https://catalog.demo.redhat.com/catalog?item=babylon-catalog-prod/sandboxes-gpte
 
 3. Click **"Launch instance"**
 
-### 2. Security Group Configuration
+### 2. Security Group Configuration, only needed to access your registry externally
 
 Configure inbound rule to allow access to mirror registry:
 
@@ -156,21 +156,7 @@ Create a second EC2 instance identical to the bastion host for registry operatio
 
 3. Click **"Launch instance"**
 
-### 2. Security Group Configuration (Registry)
 
-Apply the same security group configuration as the bastion host:
-
-1. **Select your registry instance** from the EC2 console
-2. Navigate to the **"Security"** tab
-3. **Click on the currently applied Security Group** link
-4. If using the same security group as bastion, it's already configured
-5. **If using a different security group**, follow the same steps as bastion:
-   - Click **"Edit inbound rules"**
-   - Click **"Add rule"** with settings:
-     - **Type:** Custom TCP
-     - **Port Range:** 8443
-     - **Source:** 0.0.0.0/0 (for lab/testing only)
-   - Click **"Save Rules"**
 
 ### 3. Connect to Registry Host
 
@@ -239,28 +225,24 @@ dig +short registry.sandboxXXX.opentlc.com
 
 ## Next Steps
 
-Once your AWS infrastructure is configured with both bastion and registry hosts, you can proceed with different oc-mirror workflows:
+🎉 **Infrastructure Setup Complete!** 
 
-### Two-Host Architecture Workflows
+Your AWS environment is now ready with:
+- ✅ **Bastion Host** (`bastion.sandboxXXX.opentlc.com`) - Ready for connected operations
+- ✅ **Registry Host** (`registry.sandboxXXX.opentlc.com`) - Ready for disconnected operations  
+- ✅ **DNS Configuration** - Both hosts accessible via Route53
+- ✅ **Security Groups** - Registry access configured on port 8443
 
-Your infrastructure now supports the complete **air-gapped mirroring workflow**:
+### **🔄 Return to Your Hackathon Journey**
 
-1. **Bastion Host (Connected)** - Use for [mirror-to-disk](../flows/mirror-to-disk.md) operations
-2. **Registry Host (Disconnected)** - Use for [from-disk-to-registry](../flows/from-disk-to-registry.md) operations
+**➡️ [Continue with the Hackathon Quick Start Guide](../hackathon-quickstart.md#-step-2-understand-oc-mirror-flows)**
 
-### Choose Your Next Steps
+Your infrastructure now supports all hackathon paths:
+- **🚫 Two-Host Air-Gapped Path** - Use both hosts for complete air-gapped simulation
+- **🔗 Semi-Connected Path** - Use either host for direct registry mirroring  
+- **🌐 Single-Host Testing** - Use bastion host for quick testing
 
-| Workflow | Hosts Used | Documentation |
-|----------|------------|---------------|
-| **Complete Air-Gapped Flow** | Both hosts | [mirror-to-disk](../flows/mirror-to-disk.md) → [from-disk-to-registry](../flows/from-disk-to-registry.md) |
-| **Single Host Testing** | Bastion only | [oc-mirror-workflow.md](oc-mirror-workflow.md) |
-| **Semi-Connected Flow** | Either host | [mirror-to-registry](../flows/mirror-to-registry.md) |
-
-### Recommended Starting Point
-
-**➡️ For complete air-gapped simulation: [../flows/README.md](../flows/README.md)**
-
-The flows guide provides a decision matrix to help you choose the right oc-mirror --v2 pattern based on your environment and requirements.
+The hackathon guide will help you select and execute the right flow for your learning goals.
 
 ---
 

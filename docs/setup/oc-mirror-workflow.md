@@ -40,7 +40,7 @@ This guide walks you through setting up disconnected OpenShift content mirroring
 - SSH access to your Linux system (if using remote host)
 
 ### Technical Requirements
-- **Linux System**: RHEL 9/10, CentOS Stream, or compatible Linux distribution
+- **Linux System**: RHEL 9, CentOS Stream, or compatible Linux distribution
 - **Storage**: 500+ GB available disk space for mirroring operations
 - **Memory**: 8+ GB RAM recommended for oc-mirror operations
 - **Network**: Stable internet connection for initial content download
