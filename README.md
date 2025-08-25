@@ -1,10 +1,14 @@
 # 🚀 oc-mirror Hackathon Repository
 
-**Complete OpenShift Disconnected Mirroring Workshop**
+**OpenShift 4.20 oc-mirror v2 Disconnected Mirroring Workshop**
 
-Welcome to the oc-mirror hackathon! This repository provides everything you need to master OpenShift content mirroring for disconnected environments.
+Welcome to the oc-mirror hackathon! This repository provides everything you need to master **oc-mirror v2** content mirroring for disconnected OpenShift 4.20 environments.
 
-## 🎯 Start Here: Hackathon Quick Start
+## 🎯 Hackathon Overview
+
+This hackathon focuses on hands-on experience with **oc-mirror v2** using **OpenShift 4.20.0-ec.5** to learn disconnected mirroring workflows, air-gapped deployments, and enterprise-grade content management patterns.
+
+### **🚀 Start Your Hackathon Journey**
 
 ### **➡️ [docs/hackathon-quickstart.md](docs/hackathon-quickstart.md)**
 
@@ -15,7 +19,18 @@ Welcome to the oc-mirror hackathon! This repository provides everything you need
 - 🔄 **oc-mirror Flow Patterns** - All 4 flows with tested procedures
 - ✅ **Success Validation** - Know when you've mastered the content
 
-### **🤔 New to oc-mirror? Start with the hackathon guide above!**
+## 📋 Hackathon Resources & Context
+
+### **oc-mirror Development & Planning**
+- **[oc-mirror Delivery Plan by Release](https://issues.redhat.com/secure/Dashboard.jspa?selectPageId=12365011)** - Release planning and roadmap
+- **[Documentation JIRA Dashboard](https://issues.redhat.com/secure/Dashboard.jspa?selectPageId=12347526)** - Documentation tracking and issues
+
+### **oc-mirror Version & Tools**  
+- **[OpenShift 4.20.0-ec.5 Tools](https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/4.20.0-ec.5/)** - oc-mirror v2, oc client, installer binaries
+- **[ICS Viewer - Operator Catalog Terminal UI](https://github.com/lmzuccarelli/rust-operator-catalog-viewer)** - Tool for viewing operator metadata in catalogs
+
+### **Hackathon Documentation** 
+- **[Hackathon Planning Document](https://docs.google.com/document/d/16ADTm829atCwwmeN6tjKKYc97UNkfzfAxotgqerkN9A/edit?tab=t.0#heading=h.66y4kqbj468a)** *(Note: Private access required)*
 
 ## 📚 Documentation Structure
 
