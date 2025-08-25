@@ -120,8 +120,48 @@ tar -xzf openshift-tools.tar.gz
 
 # Install all tools  
 ./install.sh
+```
 
-# Verify installations
+### 2.5. Hackathon-Specific oc-mirror v2 (OpenShift 4.20.0-ec.5)
+
+**For exact hackathon version consistency** in disconnected environments:
+
+```bash
+# If hackathon oc-mirror was transferred with content archive:
+cd downloads/
+
+# Extract hackathon oc-mirror (should be in transferred archive)
+tar -xzf oc-mirror-hackathon.rhel9.tar.gz 2>/dev/null || echo "Using existing oc-mirror"
+chmod +x oc-mirror
+
+# Install to PATH
+sudo cp oc-mirror /usr/local/bin/
+```
+
+**OR, if limited internet connectivity is available:**
+
+```bash
+cd downloads/
+
+# Download oc-mirror v2 from OpenShift 4.20.0-ec.5
+echo "🔄 Downloading hackathon-specific oc-mirror v2..."
+curl -L -o oc-mirror-hackathon.rhel9.tar.gz \
+  "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/4.20.0-ec.5/oc-mirror.rhel9.tar.gz"
+
+# Backup existing and install hackathon version
+mv oc-mirror oc-mirror-stable-backup 2>/dev/null || true
+tar -xzf oc-mirror-hackathon.rhel9.tar.gz
+chmod +x oc-mirror
+sudo cp oc-mirror /usr/local/bin/
+```
+
+### 3. Verify Installation
+
+```bash
+# Verify hackathon version (4.20.0-ec.5)
+oc-mirror --version
+
+# Check basic functionality
 oc-mirror --help
 oc version  
 ```

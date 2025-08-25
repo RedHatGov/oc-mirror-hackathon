@@ -164,6 +164,32 @@ Execute the simplified collection script:
 1. Copy the entire `downloads/` directory to your disconnected environment
 2. Run `cd downloads && ./install.sh` to install all tools
 
+### 2.5. Hackathon-Specific oc-mirror v2 (OpenShift 4.20.0-ec.5)
+
+**For exact hackathon version consistency**, upgrade to oc-mirror v2 from 4.20.0-ec.5:
+
+```bash
+# After running collect_ocp, get the hackathon-specific oc-mirror v2
+cd downloads/
+
+# Download oc-mirror v2 from OpenShift 4.20.0-ec.5
+echo "🔄 Downloading hackathon-specific oc-mirror v2..."
+curl -L -o oc-mirror-hackathon.rhel9.tar.gz \
+  "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/4.20.0-ec.5/oc-mirror.rhel9.tar.gz"
+
+# Backup the existing oc-mirror (optional)
+mv oc-mirror oc-mirror-stable-backup 2>/dev/null || true
+
+# Extract and install hackathon oc-mirror
+tar -xzf oc-mirror-hackathon.rhel9.tar.gz
+chmod +x oc-mirror
+
+# Install to PATH
+sudo cp oc-mirror /usr/local/bin/
+```
+
+> **💡 Hackathon Tip:** This ensures all participants use the exact same oc-mirror v2 version for consistent results and troubleshooting.
+
 ### 3. Verify Installation
 
 Confirm all tools are properly installed and accessible:
@@ -171,6 +197,9 @@ Confirm all tools are properly installed and accessible:
 ```bash
 # Check oc-mirror
 oc-mirror help
+
+# Verify hackathon version (4.20.0-ec.5)
+oc-mirror --version
 
 # Check OpenShift CLI
 oc version
