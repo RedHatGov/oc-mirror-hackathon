@@ -8,22 +8,26 @@ This guide provides AWS-specific infrastructure setup instructions for the oc-mi
 2. [Prerequisites](#prerequisites)
 3. [AWS Environment Setup](#aws-environment-setup)
 4. [Bastion Host Configuration](#bastion-host-configuration)
-5. [Next Steps](#next-steps)
+5. [Registry Host Configuration](#registry-host-configuration)
+6. [DNS Configuration](#dns-configuration)
+7. [Next Steps](#next-steps)
 
 ## Overview
 
-This guide covers the AWS-specific infrastructure setup needed for the oc-mirror workshop:
+This guide covers the AWS-specific infrastructure setup needed for the oc-mirror workshop, including the **two-host architecture** required for air-gapped mirroring workflows:
 
 - **AWS Demo Environment**: Red Hat Demo Platform AWS environment
-- **Bastion Host**: RHEL 10 instance with networking configuration
-- **DNS Configuration**: Route53 DNS records for the bastion host
+- **Bastion Host**: RHEL 10 instance for connected mirroring operations
+- **Registry Host**: RHEL 10 instance for disconnected registry operations
+- **DNS Configuration**: Route53 DNS records for both hosts
 - **Security Groups**: Firewall rules for mirror registry access
 
 ### What You'll Build
 - 🌐 **AWS Demo Environment**: Sandbox environment with credentials
-- 🖥️ **Bastion Host**: RHEL 10 EC2 instance (t2.large, 1TB storage)
-- 🔗 **DNS Record**: Route53 A record for bastion host access
-- 🛡️ **Security Group**: Firewall rules for mirror registry (port 8443)
+- 🖥️ **Bastion Host**: RHEL 10 EC2 instance for mirror-to-disk operations (t2.large, 1TB storage)
+- 🖥️ **Registry Host**: RHEL 10 EC2 instance for from-disk-to-registry operations (t2.large, 1TB storage)
+- 🔗 **DNS Records**: Route53 A records for both bastion and registry host access
+- 🛡️ **Security Groups**: Firewall rules for mirror registry access (port 8443)
 
 ## Prerequisites
 
@@ -104,32 +108,18 @@ Configure inbound rule to allow access to mirror registry:
    - **Source:** 0.0.0.0/0 (for lab/testing only - restrict in production)
 6. Click **"Save Rules"**
 
-### 3. DNS Configuration
-
-Set up DNS record for your bastion host:
-
-1. **Copy the public IP address** from your EC2 instance details
-2. **Navigate to the Route53 console**
-3. **Click Hosted zones from the sidebar menu**
-4. **Select your hosted zone** (e.g. `sandboxXXX.opentlc.com`)
-5. **Click "Create record" and using the following settings**:
-   - **Record Name:** `bastion`
-   - **Record Type:** A
-   - **Value:** [Your bastion EC2 instance's public IP]
-6. **Click "Create records"**
-
-### 4. Connect to Bastion Host
+### 3. Connect to Bastion Host
 
 #### SSH Connection
 ```bash
 # Replace with your actual key file and IP address
 ssh -i ~/.ssh/your-key.pem ec2-user@[BASTION-PUBLIC-IP]
 
-# Alternative: Use the public DNS name
+# Alternative: Use the public DNS name (after DNS configuration)
 ssh -i ~/.ssh/your-key.pem ec2-user@bastion.sandboxXXX.opentlc.com
 ```
 
-### 5. Initial System Setup
+### 4. Initial System Setup (Bastion)
 
 Once connected to your bastion host, perform initial configuration:
 
@@ -145,37 +135,159 @@ podman --version
 git --version
 ```
 
+## Registry Host Configuration
+
+### 1. Launch Registry EC2 Instance
+
+Create a second EC2 instance identical to the bastion host for registry operations:
+
+#### Instance Configuration
+1. In the EC2 Console, click **"Launch instance"**
+2. Use the wizard to configure the following settings:
+
+| Setting | Value | Notes |
+|---------|-------|-------|
+| **Name** | `registry` | Descriptive name for registry operations |
+| **OS** | Red Hat Enterprise Linux 10 | Same as bastion host |
+| **Instance Type** | `t2.large` | Same specifications as bastion |
+| **Key Pair** | Use same key pair as bastion | For consistent access |
+| **Network** | Default VPC and subnet | Same network as bastion host |
+| **Storage** | 1x 1024 GiB (gp3) | Same storage as bastion for registry data |
+
+3. Click **"Launch instance"**
+
+### 2. Security Group Configuration (Registry)
+
+Apply the same security group configuration as the bastion host:
+
+1. **Select your registry instance** from the EC2 console
+2. Navigate to the **"Security"** tab
+3. **Click on the currently applied Security Group** link
+4. If using the same security group as bastion, it's already configured
+5. **If using a different security group**, follow the same steps as bastion:
+   - Click **"Edit inbound rules"**
+   - Click **"Add rule"** with settings:
+     - **Type:** Custom TCP
+     - **Port Range:** 8443
+     - **Source:** 0.0.0.0/0 (for lab/testing only)
+   - Click **"Save Rules"**
+
+### 3. Connect to Registry Host
+
+#### SSH Connection
+```bash
+# Replace with your actual key file and IP address
+ssh -i ~/.ssh/your-key.pem ec2-user@[REGISTRY-PUBLIC-IP]
+
+# Alternative: Use the public DNS name (after DNS configuration)
+ssh -i ~/.ssh/your-key.pem ec2-user@registry.sandboxXXX.opentlc.com
+```
+
+### 4. Initial System Setup (Registry)
+
+Once connected to your registry host, perform initial configuration:
+
+```bash
+# Set the hostname (replace XXX with your sandbox number)
+sudo hostnamectl hostname registry.sandboxXXX.opentlc.com
+
+# Install required packages
+sudo dnf install -y podman git jq vim wget
+
+# Verify installation
+podman --version
+git --version
+```
+
+## DNS Configuration
+
+Set up DNS records for both bastion and registry hosts:
+
+### 1. Create Bastion DNS Record
+
+1. **Copy the public IP address** from your bastion EC2 instance details
+2. **Navigate to the Route53 console**
+3. **Click Hosted zones from the sidebar menu**
+4. **Select your hosted zone** (e.g. `sandboxXXX.opentlc.com`)
+5. **Click "Create record" and use the following settings**:
+   - **Record Name:** `bastion`
+   - **Record Type:** A
+   - **Value:** [Your bastion EC2 instance's public IP]
+6. **Click "Create records"**
+
+### 2. Create Registry DNS Record
+
+1. **Copy the public IP address** from your registry EC2 instance details
+2. **In the same hosted zone**, click **"Create record"** again
+3. **Use the following settings**:
+   - **Record Name:** `registry`
+   - **Record Type:** A
+   - **Value:** [Your registry EC2 instance's public IP]
+4. **Click "Create records"**
+
+### 3. Verify DNS Configuration
+
+```bash
+# Test DNS resolution for both hosts
+nslookup bastion.sandboxXXX.opentlc.com
+nslookup registry.sandboxXXX.opentlc.com
+
+# Alternative: Use dig command
+dig +short bastion.sandboxXXX.opentlc.com
+dig +short registry.sandboxXXX.opentlc.com
+```
+
 ## Next Steps
 
-Once your AWS infrastructure is configured and you're connected to your bastion host, continue with the universal oc-mirror setup guide:
+Once your AWS infrastructure is configured with both bastion and registry hosts, you can proceed with different oc-mirror workflows:
 
-**➡️ Continue to: [oc-mirror-workflow.md](oc-mirror-workflow.md)**
+### Two-Host Architecture Workflows
 
-The oc-mirror setup guide covers:
-- OpenShift tools installation
-- Mirror registry deployment
-- Content mirroring with oc-mirror
-- User transfer workflows
-- Post-installation configuration
+Your infrastructure now supports the complete **air-gapped mirroring workflow**:
+
+1. **Bastion Host (Connected)** - Use for [mirror-to-disk](../flows/mirror-to-disk.md) operations
+2. **Registry Host (Disconnected)** - Use for [from-disk-to-registry](../flows/from-disk-to-registry.md) operations
+
+### Choose Your Next Steps
+
+| Workflow | Hosts Used | Documentation |
+|----------|------------|---------------|
+| **Complete Air-Gapped Flow** | Both hosts | [mirror-to-disk](../flows/mirror-to-disk.md) → [from-disk-to-registry](../flows/from-disk-to-registry.md) |
+| **Single Host Testing** | Bastion only | [oc-mirror-workflow.md](oc-mirror-workflow.md) |
+| **Semi-Connected Flow** | Either host | [mirror-to-registry](../flows/mirror-to-registry.md) |
+
+### Recommended Starting Point
+
+**➡️ For complete air-gapped simulation: [../flows/README.md](../flows/README.md)**
+
+The flows guide provides a decision matrix to help you choose the right oc-mirror --v2 pattern based on your environment and requirements.
 
 ---
 
 ## AWS-Specific Notes
 
 ### Cost Management
-- The t2.large instance and 1TB storage will incur costs if left running
-- Use the demo environment's auto-stop/auto-destroy features
+- **Two t2.large instances** and **2TB total storage** (2x1TB) will incur higher costs
+- Use the demo environment's auto-stop/auto-destroy features for both instances
 - Monitor usage through the AWS billing dashboard
+- Consider stopping instances when not in use for extended periods
 
 ### Security Considerations
 - Security group rule (0.0.0.0/0) is for lab use only
 - In production, restrict source IPs to specific networks
-- Consider using AWS Systems Manager Session Manager for SSH access
+- **Registry host** should have additional security hardening in production environments
+- Consider using AWS Systems Manager Session Manager for SSH access to both hosts
+
+### Network Architecture
+- Both hosts share the same VPC and security group for simplicity
+- In production, consider separate subnets or security groups for role isolation
+- DNS names (`bastion.sandboxXXX.opentlc.com` and `registry.sandboxXXX.opentlc.com`) provide clear host identification
 
 ### Troubleshooting
-- If EC2 launch fails, check service limits in the AWS console
-- Route53 DNS propagation may take 5-10 minutes
-- Ensure your SSH key has proper permissions (chmod 600)
+- If EC2 launch fails, check service limits in the AWS console (now using 2 instances)
+- Route53 DNS propagation may take 5-10 minutes for both records
+- Ensure your SSH key has proper permissions (chmod 600) and works with both hosts
+- Test connectivity between bastion and registry hosts if using internal networking
 
 ---
 
