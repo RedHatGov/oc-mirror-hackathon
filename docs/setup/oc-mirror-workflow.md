@@ -289,114 +289,19 @@ cat ~/oc-mirror-hackathon/oc-mirror-master/content/working-dir/cluster-resources
 
 ## OpenShift Installation
 
-### 1. Prepare Installation Prerequisites
+Now that you have mirrored the required OpenShift content to your mirror registry, you can proceed with creating the disconnected OpenShift cluster.
 
-#### Generate SSH Key Pair
-```bash
-# Generate SSH key for cluster access
-ssh-keygen -t ed25519 -C "openshift@bastion"
-# Accept defaults for key location and passphrase
+> 📖 **Complete Installation Guide:** For detailed step-by-step cluster creation instructions, see the [OpenShift Cluster Creation Guide](../guides/openshift-create-cluster.md).
 
-# Verify key generation
-ls -la ~/.ssh/id_ed25519*
-```
+The cluster creation guide covers:
+- 🔑 **SSH key preparation** and authentication configuration  
+- ⚙️ **Installation configuration** for disconnected environments
+- 🚀 **Cluster deployment** using mirrored content
+- ✅ **Post-installation configuration** and verification
 
-#### Prepare Authentication Configuration
-```bash
-# View your current auth configuration
-cat ~/.config/containers/auth.json
+### Quick Installation Summary
 
-# Extract registry-specific authentication for install config
-# Format needed: {"auths": {"<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443": {"auth": "BASE64_ENCODED_CREDENTIALS"}}}
-
-jq -c --arg reg "$(hostname):8443" '
-  .auths[$reg].auth as $token
-  | {"auths": { ($reg): {"auth": $token} }}
-' ~/.config/containers/auth.json
-```
-
-### 2. Create Installation Configuration
-
-Run the OpenShift installer configuration wizard:
-
-```bash
-# Create install configuration
-cd ~/oc-mirror-hackathon/ocp
-openshift-install create install-config
-```
-
-**Provide the following information based on your cloud platform:**
-
-| Parameter | Example Value | Notes |
-|-----------|---------------|-------|
-| **SSH Public Key** | `~/.ssh/id_ed25519.pub` | Generated above |
-| **Platform** | AWS, Azure, GCP, vSphere, etc. | Your cloud/infrastructure provider |
-| **Platform Credentials** | Various | Specific to your cloud provider |
-| **Region/Location** | us-east-1, eastus, etc. | Provider-specific region |
-| **Base Domain** | example.com | Your DNS domain for the cluster |
-| **Cluster Name** | ocp | Descriptive cluster name |
-| **Pull Secret** | Registry auth JSON | From your auth.json file |
-
-> 📋 **Platform-Specific Setup:** For detailed cloud-specific configuration, refer to the [OpenShift Installation Documentation](https://docs.openshift.com/container-platform/latest/installing/) for your specific platform.
-
-### 3. Configure Disconnected Installation
-
-#### Add Image Mirror Sources
-Edit the installation configuration to include mirror information:
-
-```bash
-# Edit the configuration
-vi install-config.yaml
-```
-
-**Add the imageDigestSources section:**
-```yaml
-imageDigestSources:
-  - mirrors:
-    - <YOUR-MIRROR-REGISTRY-HOSTNAME>:8443/openshift/release
-    source: quay.io/openshift-release-dev/ocp-v4.0-art-dev
-  - mirrors:
-    - <YOUR-MIRROR-REGISTRY-HOSTNAME>:8443/openshift/release-images
-    source: quay.io/openshift-release-dev/ocp-release
-```
-
-> 🔧 **Replace `<YOUR-MIRROR-REGISTRY-HOSTNAME>`** with your actual mirror registry hostname/IP address.
-
-#### Add Additional Trust Bundle
-Include the registry certificate in the installation configuration:
-
-```bash
-# Get the registry certificate
-cat ~/quay-install/quay-rootCA/rootCA.pem
-
-# Example install-config.yaml format
-
-additionalTrustBundle: |
-  -----BEGIN CERTIFICATE-----
-  [PASTE YOUR CERTIFICATE CONTENT HERE]
-  -----END CERTIFICATE-----
-```
-
-**Add the additionalTrustBundle section to install-config.yaml:**
-```yaml
-
-{ echo "additionalTrustBundle: |"; sed 's/^/  /' ~/quay-install/quay-rootCA/rootCA.pem; } >> install-config.yaml
-
-```
-
-### 4. Deploy the Cluster
-
-Execute the cluster installation:
-
-```bash
-# Create a final backup of your config
-cp install-config.yaml install-config.yaml.bk
-
-# Deploy the cluster with debug logging
-openshift-install create cluster --log-level debug
-```
-
-> ⏱️ **Installation Time:** The installation typically takes 30-45 minutes. Monitor the output for any issues.
+Once you complete the cluster installation using the dedicated guide, you'll return here to apply the mirrored content configuration resources.
 
 ## Post-Installation
 

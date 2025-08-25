@@ -15,4 +15,5 @@ ocp/install-config.yaml.bk
 ocp/metadata.json
 ocp/terraform.platform.auto.tfvars.json
 ocp/terraform.tfvars.json
+ocp/clusterversion-messages.log
 ocp/tls/

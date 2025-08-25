@@ -9,6 +9,8 @@ Technical reference materials, command documentation, and project information.
 | **[oc-mirror-v2-commands.md](oc-mirror-v2-commands.md)** | Complete oc-mirror v2 command reference | Technical Reference |
 | **[image-deletion.md](image-deletion.md)** | Comprehensive image deletion reference | Technical Reference |
 | **[cache-management.md](cache-management.md)** | Storage optimization and cache lifecycle management | Technical Reference |
+| **[operator-mirroring.md](operator-mirroring.md)** | Complete operator mirroring reference | Technical Reference |
+| **[airgap-testing.md](airgap-testing.md)** | Air-gapped deployment testing and validation | Technical Reference |
 | **[improvements-summary.md](improvements-summary.md)** | Project improvements and changelog | Project Documentation |
 
 ## How to Use Reference Documentation
@@ -31,6 +33,18 @@ Technical reference materials, command documentation, and project information.
   - Storage planning and monitoring strategies
   - Cleanup operations and automation scripts
   - Performance impact analysis and best practices
+
+- **[operator-mirroring.md](operator-mirroring.md)** - Complete operator mirroring reference
+  - Operator catalog mirroring techniques
+  - Custom catalog configuration and management
+  - Enterprise operator deployment patterns
+  - Troubleshooting operator mirroring issues
+
+- **[airgap-testing.md](airgap-testing.md)** - Air-gapped deployment testing and validation
+  - Comprehensive testing methodologies
+  - Validation procedures for disconnected environments
+  - Test automation and scripting patterns
+  - Performance and functionality verification
 
 ### **Project Information**
 - **[improvements-summary.md](improvements-summary.md)** - Project evolution and improvements

@@ -6,12 +6,10 @@ Step-by-step guides for specific oc-mirror tasks and scenarios.
 
 | File | Description | Use Case |
 |------|-------------|----------|
-| **[collect-ocp-guide.md](collect-ocp-guide.md)** | Simplified tool collection script | Getting started with OpenShift tools |
-| **[cache-consistency-guide.md](cache-consistency-guide.md)** | Cache architecture & consistency | **Critical** for production deployments |
-| **[cluster-upgrade-guide.md](cluster-upgrade-guide.md)** | Disconnected cluster upgrades | Upgrading OpenShift using mirrored content |
-| **[image-deletion-guide.md](image-deletion-guide.md)** | **Step-by-step** image deletion | Safely remove old OpenShift versions |
-| **[operator-mirroring.md](operator-mirroring.md)** | Mirror OpenShift operators | Adding operators to disconnected environments |
-| **[airgap-testing.md](airgap-testing.md)** | Test air-gapped deployments | Validation of disconnected installations |
+| **[collect-ocp.md](collect-ocp.md)** | Simplified tool collection script | Getting started with OpenShift tools |
+| **[openshift-create-cluster.md](openshift-create-cluster.md)** | **Disconnected cluster creation** | Complete guide for deploying OpenShift with mirrored content |
+| **[cluster-upgrade.md](cluster-upgrade.md)** | Disconnected cluster upgrades | Upgrading OpenShift using mirrored content |
+| **[image-deletion.md](image-deletion.md)** | **Step-by-step** image deletion | Safely remove old OpenShift versions |
 
 ## Prerequisites
 
@@ -24,3 +22,5 @@ Before using these guides, complete the setup process:
 - **[../workflows/](../workflows/)** - Advanced operational patterns
 - **[../reference/](../reference/)** - Command references and technical details
   - **[../reference/image-deletion.md](../reference/image-deletion.md)** - Comprehensive deletion reference
+  - **[../reference/operator-mirroring.md](../reference/operator-mirroring.md)** - Complete operator mirroring reference
+  - **[../reference/airgap-testing.md](../reference/airgap-testing.md)** - Air-gapped deployment testing reference

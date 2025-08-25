@@ -388,8 +388,8 @@ oc adm upgrade --to-image=<previous-release-image>
 
 ### Related Guides
 - [oc-mirror Workflow Guide](../setup/oc-mirror-workflow.md)
-- [Cache Consistency Guide](cache-consistency-guide.md)
-- [Collect OCP Tools Guide](collect-ocp-guide.md)
+- [Cache Management Guide](../reference/cache-management.md)
+- [Collect OCP Tools Guide](collect-ocp.md)
 
 ### Support Resources
 - Red Hat Customer Portal: [Access Portal](https://access.redhat.com/)

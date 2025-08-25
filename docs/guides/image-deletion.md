@@ -507,7 +507,7 @@ cd oc-mirror-master/
 
 ### Related Documentation
 - [Comprehensive Image Deletion Guide](../reference/image-deletion.md) - Detailed technical reference
-- [Cluster Upgrade Guide](cluster-upgrade-guide.md) - For upgrading before cleanup
+- [Cluster Upgrade Guide](cluster-upgrade.md) - For upgrading before cleanup
 - [oc-mirror Workflow Guide](../setup/oc-mirror-workflow.md) - Standard mirroring procedures
 
 ### Command Reference
