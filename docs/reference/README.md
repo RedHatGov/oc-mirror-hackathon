@@ -2,6 +2,11 @@
 
 Technical reference materials, command documentation, and project information.
 
+## 🎯 Hackathon Participants
+
+**For complete hackathon journey:** [../hackathon-quickstart.md](../hackathon-quickstart.md)  
+**For step-by-step flows:** [../flows/](../flows/)
+
 ## Available References
 
 | File | Description | Type |

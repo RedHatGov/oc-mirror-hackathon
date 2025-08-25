@@ -1,23 +1,43 @@
 # Setup Guides
 
-Essential setup guides to get your oc-mirror environment running.
+Essential infrastructure and environment setup for oc-mirror hackathon.
 
-## Quick Start Path
+## 🎯 Hackathon Participants: Start Here!
 
-1. **[aws-lab-infrastructure.md](aws-lab-infrastructure.md)** - Set up your lab infrastructure (AWS/cloud)
-2. **[oc-mirror-workflow.md](oc-mirror-workflow.md)** - Main oc-mirror setup and workflow
+**Complete hackathon guide:** [../hackathon-quickstart.md](../hackathon-quickstart.md)
+
+## Setup Guide Overview
+
+### **Two-Host Architecture (Recommended for Hackathon)**
+
+1. **[aws-lab-infrastructure.md](aws-lab-infrastructure.md)** - Two-host AWS infrastructure setup
+2. Choose your oc-mirror flow from **[../flows/](../flows/)** based on your learning path
+
+### **Traditional Single-Host Approach**
+
+1. **[aws-lab-infrastructure.md](aws-lab-infrastructure.md)** - Single-host infrastructure  
+2. **[oc-mirror-workflow.md](oc-mirror-workflow.md)** - Complete workflow on one host
 
 ## Files in this Directory
 
-| File | Description | Prerequisites |
-|------|-------------|---------------|
-| **[aws-lab-infrastructure.md](aws-lab-infrastructure.md)** | AWS-specific infrastructure setup | Red Hat Demo Platform access |
-| **[oc-mirror-workflow.md](oc-mirror-workflow.md)** | Universal oc-mirror workflow | Linux system with required tools |
+| File | Description | Architecture | Use Case |
+|------|-------------|--------------|----------|
+| **[aws-lab-infrastructure.md](aws-lab-infrastructure.md)** | AWS infrastructure with bastion + registry hosts | **Two-host** | Air-gapped simulation |
+| **[oc-mirror-workflow.md](oc-mirror-workflow.md)** | Traditional complete oc-mirror workflow | Single-host | Comprehensive learning |
+
+## Infrastructure Overview
+
+Our **two-host architecture** enables true air-gapped learning:
+
+- **🖥️ Bastion Host** (`bastion.sandboxXXX.opentlc.com`) - Connected operations  
+- **🖥️ Registry Host** (`registry.sandboxXXX.opentlc.com`) - Disconnected operations
+- **🔗 DNS Configuration** - Proper host separation and identification
+- **🌉 Air-Gap Simulation** - Real enterprise deployment patterns
 
 ## What's Next?
 
-After completing the setup guides, explore:
+After completing infrastructure setup:
 
-- **[../guides/](../guides/)** - How-to guides for specific tasks
-- **[../reference/workflows/](../reference/workflows/)** - Advanced patterns and procedures
-- **[../reference/](../reference/)** - Command references and technical docs
+- **[../flows/](../flows/)** - **oc-mirror --v2 flow patterns** (hackathon core content)
+- **[../guides/](../guides/)** - Step-by-step operational guides  
+- **[../reference/workflows/](../reference/workflows/)** - Enterprise operational patterns

@@ -1,40 +1,51 @@
-# oc-mirror Hackathon Repository
+# 🚀 oc-mirror Hackathon Repository
 
-This repository contains a series of guides and templates to prepare for the oc-mirror hack-a-thon.
+**Complete OpenShift Disconnected Mirroring Workshop**
 
-## Getting Started
+Welcome to the oc-mirror hackathon! This repository provides everything you need to master OpenShift content mirroring for disconnected environments.
 
-### 📋 For Infrastructure Setup
-If you need to set up lab infrastructure (bastion host, networking, etc.), start with:
-**[docs/setup/aws-lab-infrastructure.md](docs/setup/aws-lab-infrastructure.md)** - AWS-specific infrastructure setup
+## 🎯 Start Here: Hackathon Quick Start
 
-### 🚀 For oc-mirror Workflow
-For the main oc-mirror workflow (platform-agnostic), use:
-**[docs/setup/oc-mirror-workflow.md](docs/setup/oc-mirror-workflow.md)** - Universal oc-mirror setup and operations
+### **➡️ [docs/hackathon-quickstart.md](docs/hackathon-quickstart.md)**
 
-## Documentation Structure
+**Your complete guide from zero to oc-mirror expert!** This guide provides:
 
-### **📁 [setup/](docs/setup/)**
-Essential setup guides to get started:
-- **[aws-lab-infrastructure.md](docs/setup/aws-lab-infrastructure.md)** - Cloud infrastructure setup (AWS focus)
-- **[oc-mirror-workflow.md](docs/setup/oc-mirror-workflow.md)** - Main oc-mirror workflow guide
+- 🎲 **Decision Matrix** - Choose the right path for your environment
+- 🏗️ **AWS Infrastructure Setup** - Two-host architecture for air-gapped learning  
+- 🔄 **oc-mirror Flow Patterns** - All 4 flows with tested procedures
+- ✅ **Success Validation** - Know when you've mastered the content
+
+### **🤔 New to oc-mirror? Start with the hackathon guide above!**
+
+## 📚 Documentation Structure
+
+### **🚀 [hackathon-quickstart.md](docs/hackathon-quickstart.md)**
+**Start here!** Complete hackathon guide with decision matrix and path selection
+
+### **🏗️ [setup/](docs/setup/)**  
+Infrastructure and environment setup:
+- **[aws-lab-infrastructure.md](docs/setup/aws-lab-infrastructure.md)** - Two-host AWS infrastructure
+- **[oc-mirror-workflow.md](docs/setup/oc-mirror-workflow.md)** - Complete oc-mirror workflow
+
+### **🔄 [flows/](docs/flows/)**
+**oc-mirror --v2 flow patterns** (hackathon core content):
+- **[mirror-to-disk.md](docs/flows/mirror-to-disk.md)** - Create portable archives for air-gapped transfer
+- **[from-disk-to-registry.md](docs/flows/from-disk-to-registry.md)** - Deploy archives to disconnected registries
+- **[mirror-to-registry.md](docs/flows/mirror-to-registry.md)** - Direct mirroring for semi-connected environments  
+- **[delete.md](docs/flows/delete.md)** - Safe content cleanup and version management
 
 ### **📖 [guides/](docs/guides/)**
-How-to guides for specific tasks:
-- **[operator-mirroring.md](docs/guides/operator-mirroring.md)** - Operator mirroring specifics
-- **[image-deletion.md](docs/guides/image-deletion.md)** - Image cleanup procedures
-- **[airgap-testing.md](docs/guides/airgap-testing.md)** - Air-gap validation
-
-### **⚙️ [workflows/](docs/workflows/)**
-Advanced patterns and operational procedures:
-- **[sequential-mirroring.md](docs/workflows/sequential-mirroring.md)** - Step-by-step workflows
-- **[operational-patterns.md](docs/workflows/operational-patterns.md)** - Best practices
-- **[infrastructure-patterns.md](docs/workflows/infrastructure-patterns.md)** - Advanced infrastructure
+Step-by-step operational guides:
+- **[collect-ocp.md](docs/guides/collect-ocp.md)** - Tool collection and setup
+- **[openshift-create-cluster.md](docs/guides/openshift-create-cluster.md)** - Disconnected cluster creation
+- **[cluster-upgrade.md](docs/guides/cluster-upgrade.md)** - Disconnected cluster upgrades
 
 ### **📚 [reference/](docs/reference/)**
-Reference materials and command documentation:
-- **[oc-mirror-v2-commands.md](docs/reference/oc-mirror-v2-commands.md)** - Complete oc-mirror v2 reference
-- **[improvements-summary.md](docs/reference/improvements-summary.md)** - Project improvements
+Technical references and advanced patterns:
+- **[workflows/](docs/reference/workflows/)** - Enterprise operational patterns  
+- **[oc-mirror-v2-commands.md](docs/reference/oc-mirror-v2-commands.md)** - Complete command reference
+- **[cache-management.md](docs/reference/cache-management.md)** - Storage optimization
+- **[image-deletion.md](docs/reference/image-deletion.md)** - Comprehensive deletion reference
 
 ### **🛠️ Tools**
 - **`collect_ocp`** - Simplified tool collection script (in repository root)

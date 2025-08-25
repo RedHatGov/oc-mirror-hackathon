@@ -2,6 +2,11 @@
 
 Step-by-step guides for specific oc-mirror tasks and scenarios.
 
+## 🎯 Hackathon Participants
+
+**For complete hackathon journey:** [../hackathon-quickstart.md](../hackathon-quickstart.md)  
+**For oc-mirror flow patterns:** [../flows/](../flows/)
+
 ## Available Guides
 
 | File | Description | Use Case |
