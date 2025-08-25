@@ -70,6 +70,63 @@ ssh -i ~/.ssh/your-key.pem ec2-user@registry.sandboxXXX.opentlc.com
 
 ---
 
+## 🔧 Step 1.5: Hackathon-Specific oc-mirror v2 Setup
+
+### **🎯 Hackathon Version: OpenShift 4.20.0-ec.5**
+
+**This hackathon uses oc-mirror v2 from OpenShift 4.20.0-ec.5 for the latest features and improvements.**
+
+### **📦 Option A: Use collect_ocp (General Purpose)**
+
+The repository's `collect_ocp` script downloads the latest stable release:
+
+```bash
+# Clone repository and download standard tools
+git clone https://github.com/RedHatGov/oc-mirror-hackathon.git
+cd oc-mirror-hackathon
+./collect_ocp
+```
+
+### **📦 Option B: Hackathon-Specific oc-mirror v2**
+
+For the **exact hackathon version**, download oc-mirror v2 directly:
+
+```bash
+# After running collect_ocp, get the hackathon-specific oc-mirror v2
+cd downloads/
+
+# Download oc-mirror v2 from OpenShift 4.20.0-ec.5
+echo "🔄 Downloading hackathon-specific oc-mirror v2..."
+curl -L -o oc-mirror-hackathon.rhel9.tar.gz \
+  "https://mirror.openshift.com/pub/openshift-v4/clients/ocp-dev-preview/4.20.0-ec.5/oc-mirror.rhel9.tar.gz"
+
+# Backup the existing oc-mirror (optional)
+mv oc-mirror oc-mirror-stable-backup 2>/dev/null || true
+
+# Extract and install hackathon oc-mirror
+tar -xzf oc-mirror-hackathon.rhel9.tar.gz
+chmod +x oc-mirror
+
+# Verify hackathon version
+./oc-mirror --version
+```
+
+### **🔍 Verification**
+
+Confirm you have oc-mirror v2 with 4.20.0-ec.5 capabilities:
+
+```bash
+# Check version output
+oc-mirror --version
+
+# Verify v2 functionality
+oc-mirror --help | grep -i "v2"
+```
+
+> **💡 Tip:** Option B ensures you're using the exact same oc-mirror version as other hackathon participants, which helps with consistent results and troubleshooting.
+
+---
+
 ## 🔄 Step 2: Understanding oc-mirror Flows
 
 ### **🧠 Core Concept: oc-mirror --v2 Flows**
