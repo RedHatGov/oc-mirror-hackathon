@@ -305,50 +305,6 @@ Once you complete the cluster installation using the dedicated guide, you'll ret
 
 ## Post-Installation
 
-### 1. Configure Cluster Access
-
-Set up local access to your new cluster:
-
-```bash
-# Create kube config directory
-mkdir -p ~/.kube
-
-# Copy cluster config
-cp auth/kubeconfig ~/.kube/config
-
-# Verify cluster access
-oc whoami
-oc get nodes
-```
-
-### 2. Monitor Cluster Operators
-
-Watch the cluster operators come online:
-
-```bash
-# Monitor cluster operators
-watch oc get co
-
-# Check overall cluster status
-oc get clusterversion
-
-# View cluster nodes
-oc get nodes -o wide
-```
-
-### 3. Access the Web Console
-
-1. **Get the console URL:**
-   ```bash
-   oc whoami --show-console
-   ```
-
-2. **Get the kubeadmin password:**
-   ```bash
-   cat auth/kubeadmin-password
-   ```
-
-3. **Access the web console** using the URL and credentials
 
 ### 4. Configure Cluster Certificate Trust
 

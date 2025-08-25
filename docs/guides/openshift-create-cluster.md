@@ -266,6 +266,12 @@ INFO Login to the console with user: "kubeadmin", and password: "ABC123-def456-G
 # Set KUBECONFIG environment variable
 export KUBECONFIG=~/oc-mirror-hackathon/ocp/auth/kubeconfig
 
+# Create kube config directory
+mkdir -p ~/.kube
+
+# Copy cluster config
+cp auth/kubeconfig ~/.kube/config
+
 # Verify cluster access
 oc whoami
 oc get nodes
