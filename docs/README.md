@@ -8,6 +8,17 @@
 
 **Your complete hackathon guide!** Includes decision matrix, AWS infrastructure setup, oc-mirror flow patterns, and success validation.
 
+## ⚠️ **Critical:** Architecture Decision Required
+
+### **➡️ [architecture-patterns.md](architecture-patterns.md)**
+
+**🏗️ READ THIS FIRST** before selecting any flow! This document addresses fundamental architectural decisions about where your mirror registry runs:
+
+- **Single-Host Pattern** - Registry on bastion node (simpler)  
+- **Two-Host Pattern** - Registry on separate node (true air-gap)
+
+**Why this matters:** Our documentation currently makes assumptions about registry location that may not match your environment. This guide helps you choose the right pattern and understand current documentation gaps.
+
 ## 🚀 Alternative Quick Start Paths
 
 **Experienced users or specific use cases:**
@@ -21,6 +32,9 @@
 
 ### **🚀 [hackathon-quickstart.md](hackathon-quickstart.md)**
 **Start here for hackathon!** Decision-guided complete learning path
+
+### **⚠️ [architecture-patterns.md](architecture-patterns.md)**
+**Critical architectural decisions** - Registry deployment patterns, design considerations, and documentation roadmap
 
 ### **🏗️ [setup/](setup/)**
 Infrastructure and environment setup:

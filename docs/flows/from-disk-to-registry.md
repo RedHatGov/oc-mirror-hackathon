@@ -45,6 +45,168 @@ flowchart LR
 - **Sufficient storage** for mirrored content (50+ GB)
 - **Valid TLS certificates** (or registry configured for HTTP)
 
+---
+
+## System Preparation (Registry Node)
+
+### Prerequisites Setup
+
+**Important:** This runs on the **registry node** in your disconnected environment.
+
+```bash
+# Install required packages (RHEL/CentOS) 
+sudo dnf install -y podman git jq vim wget curl tar
+
+# Verify installations
+podman --version
+git --version
+```
+
+#### Set System Hostname
+```bash
+# Set proper hostname for your registry node
+sudo hostnamectl set-hostname registry.example.com
+
+# Verify hostname is set
+hostname
+```
+
+#### Configure Local Firewall
+Configure the firewall to allow registry access:
+
+```bash
+# Allow HTTP traffic (port 80)
+sudo firewall-cmd --permanent --add-port=80/tcp
+
+# Allow HTTPS traffic (port 443)  
+sudo firewall-cmd --permanent --add-port=443/tcp
+
+# Allow mirror registry traffic (port 8443)
+sudo firewall-cmd --permanent --add-port=8443/tcp
+
+# Reload firewall to apply changes
+sudo firewall-cmd --reload
+
+# Verify firewall rules
+sudo firewall-cmd --list-ports
+```
+
+> 🛡️ **Security Note:** These firewall rules allow access from any source. In production environments, restrict access to specific IP ranges using `--source=IP_RANGE/CIDR`.
+
+## OpenShift Tools Installation
+
+### 1. Transfer and Extract Repository
+
+**Note:** The repository should be transferred along with your content archive, or downloaded if connectivity allows.
+
+```bash
+# If repository archive was transferred:
+tar -xzf oc-mirror-hackathon.tar.gz
+cd oc-mirror-hackathon
+
+# Or clone if network access available:
+git clone https://github.com/RedHatGov/oc-mirror-hackathon.git
+cd oc-mirror-hackathon
+```
+
+### 2. Install OpenShift Tools
+
+For disconnected installations, tools should be transferred with content:
+
+```bash
+# If tools archive was transferred, extract it:
+cd downloads/
+tar -xzf openshift-tools.tar.gz
+
+# Install all tools  
+./install.sh
+
+# Verify installations
+oc-mirror --help
+oc version  
+```
+
+## Mirror Registry Setup
+
+### 1. Install Mirror Registry
+
+Navigate to the mirror registry directory and run the installer:
+
+```bash
+# Change to mirror registry directory
+cd ~/oc-mirror-hackathon/downloads/mirror-registry
+
+# Install mirror registry
+./mirror-registry install
+```
+
+> 📝 **Critical:** When the installation completes, **save the generated registry credentials** (username and password) from the last line of the log output.
+
+### 2. Trust Registry SSL Certificate
+
+Configure the system to trust the registry's self-signed certificate:
+
+```bash
+# Copy certificate to system trust store
+sudo cp ~/quay-install/quay-rootCA/rootCA.pem /etc/pki/ca-trust/source/anchors/
+
+# Update certificate trust
+sudo update-ca-trust
+
+# Verify certificate is trusted
+curl -I https://$(hostname):8443
+```
+
+### 3. Configure Authentication
+
+```bash
+# Create container config directory (if not exists)
+mkdir -p ~/.config/containers
+
+# Login to your mirror registry (use credentials from installation)
+podman login https://$(hostname):8443 \
+  --username init \
+  --password [YOUR_REGISTRY_PASSWORD]
+```
+
+### 4. Verify Registry Access
+
+Test registry access:
+- **Navigate to your registry URL:** `https://$(hostname):8443`
+- **Login with your credentials** from the installation
+- **Verify the registry interface loads**
+
+---
+
+## Configuration
+
+### ImageSet Configuration
+
+For reference, this flow uses content mirrored with this configuration:
+
+```yaml
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
+# archiveSize: 8 # only used in mirror-to-disk flow 
+mirror:
+  platform:
+    channels:
+    - name: stable-4.19
+      minVersion: 4.19.2
+      maxVersion: 4.19.2 
+    graph: true
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
+      packages:
+        - name: web-terminal
+  additionalImages: 
+    - name: registry.redhat.io/ubi9/ubi:latest
+```
+
+**Note:** This configuration is for reference only. The actual content comes from your transferred archive created by the mirror-to-disk flow.
+
+---
+
 ## Content Transfer Process
 
 ### 1. Transfer Archive to Disconnected Environment
@@ -180,82 +342,105 @@ cp content/working-dir/cluster-resources/idms-oc-mirror.yaml ~/openshift-install
 cp content/working-dir/cluster-resources/itms-oc-mirror.yaml ~/openshift-install/
 ```
 
-## Troubleshooting
+## Performance Optimization
 
-### Common Issues
+For comprehensive performance tuning guidance:
+**➡️ [oc-mirror Performance Tuning Reference](../reference/oc-mirror-v2-commands.md#performance-tuning)**
 
-**Registry connection failures:**
-```bash
-# Verify registry is running
-podman ps | grep quay
+**Quick performance tips for from-disk-to-registry:**
+- Monitor registry storage usage during uploads
+- Schedule uploads during off-peak hours when possible  
+- Use `--parallel-images` for faster uploads if network allows
 
-# Check registry logs
-podman logs quay-app
-
-# Test with curl
-curl -k https://$(hostname):8443/health/instance
-```
-
-**Authentication errors:**
-```bash
-# Re-authenticate with registry
-podman login $(hostname):8443
-
-# Verify stored credentials
-podman login --get-login $(hostname):8443
-```
-
-**Upload failures:**
-```bash
-# Check disk space on registry host
-df -h /opt/quay/
-
-# Verify content directory integrity
-find content/ -name "*.json" | wc -l
-
-# Re-run upload with verbose logging
-oc-mirror -c imageset-config.yaml --from file://content docker://$(hostname):8443 --v2 --verbose
-```
-
-### Performance Optimization
-
-**Large content uploads:**
-- Monitor network bandwidth during upload
-- Consider uploading during off-peak hours
-- Ensure sufficient storage on registry host
-
-**Registry optimization:**
-- Configure registry garbage collection
-- Monitor registry storage usage
-- Implement registry health checks
-
-## Next Steps
-
-After successful from-disk-to-registry completion:
-
-1. **Use generated IDMS/ITMS files** for OpenShift cluster installation
-2. **Follow [OpenShift installation guide](../guides/openshift-create-cluster.md)** using mirrored content
-3. **Configure cluster** to use mirror registry for ongoing operations
+---
 
 ## Cache Management
 
-### Understanding Cache Behavior
+For comprehensive cache management guidance:
+**➡️ [oc-mirror Cache Management Reference](../reference/cache-management.md)**
 
-**Important:** The `.cache/` directory from the mirror-to-disk flow is NOT transferred:
+**Quick cache tips for from-disk-to-registry:**
+- Cache is recreated fresh on registry node (not transferred)
+- Monitor size: `du -sh .cache/`
+- Cache improves performance for subsequent operations
+- Clean if needed: See reference guide for safe cleanup procedures
 
-- **Cache is recreated** on the disconnected host during upload
-- **Cache improves performance** for subsequent operations
-- **Cache can be safely deleted** after upload completes
-- **Cache is NOT required** for OpenShift cluster installation
+---
 
+## Troubleshooting
+
+For comprehensive troubleshooting guidance:
+**➡️ [oc-mirror v2 Troubleshooting Reference](../reference/oc-mirror-v2-commands.md#troubleshooting)**  
+**➡️ [Cache-Specific Issues](../reference/cache-management.md#troubleshooting)**
+
+**Quick debugging for from-disk-to-registry:**
 ```bash
-# Optional: Clean up cache after upload
-rm -rf .cache/
+# Test registry connectivity
+curl -k https://$(hostname):8443/health/instance
+
+# Verify authentication
+podman login $(hostname):8443
+
+# Use verbose logging for upload diagnostics
+oc-mirror -c imageset-config.yaml --from file://content docker://$(hostname):8443 --v2 --verbose
 ```
+
+---
+
+## When to Use This Flow
+
+### Choose From-Disk-to-Registry When:
+- ✅ **Air-gapped environments** where content must be transferred via physical media
+- ✅ **Two-host architecture** with separate bastion and registry nodes
+- ✅ **Disconnected registry deployment** requiring portable content packages
+- ✅ **Multi-site distribution** using standardized content archives
+- ✅ **Disaster recovery** scenarios restoring from backup archives
+
+### Choose Direct Registry Flows When:
+- ❌ **Semi-connected environments** with direct internet access to registries
+- ❌ **Single-host deployments** where direct mirroring is possible
+- ❌ **Development/testing** where air-gap simulation isn't required
+
+---
+
+## Next Steps
+
+🎉 **From-Disk-to-Registry Upload Complete!** Your content is now available at `https://$(hostname):8443`
+
+### **🚀 Deploy OpenShift Cluster**
+
+**➡️ [OpenShift Cluster Creation Guide](../guides/openshift-create-cluster.md)**
+
+This guide will walk you through:
+- ✅ **Using your mirrored registry** as the image source
+- ✅ **Applying generated IDMS/ITMS** cluster resources from `content/working-dir/cluster-resources/`
+- ✅ **Installing OpenShift** with disconnected content  
+- ✅ **Verifying cluster functionality** with mirrored images
+
+### **🔄 Ongoing Operations**
+
+Once your cluster is deployed:
+- **Set up monitoring** for registry health and storage
+- **Plan content updates** using additional mirror-to-disk → from-disk-to-registry cycles
+- **Configure backup procedures** for registry content
 
 ## References
 
-- **Related Scripts:** `oc-mirror-master/oc-mirror-from-disk-to-registry.sh` (tested implementation)
-- **Prerequisites:** [mirror-to-disk.md](mirror-to-disk.md) (complementary download flow)
-- **Registry Setup:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md#mirror-registry-setup)
-- **Cluster Installation:** [../guides/openshift-create-cluster.md](../guides/openshift-create-cluster.md)
+### **oc-mirror Flow Patterns**
+- **Prerequisite Flow:** [mirror-to-disk.md](mirror-to-disk.md)
+- **Alternative Flow:** [mirror-to-registry.md](mirror-to-registry.md) (semi-connected)
+- **Image Deletion:** [delete.md](delete.md)
+- **Flow Decision Guide:** [README.md](README.md)
+
+### **Next Steps**
+- **OpenShift Cluster Creation:** [../guides/openshift-create-cluster.md](../guides/openshift-create-cluster.md)
+- **Cluster Upgrade Guide:** [../guides/cluster-upgrade.md](../guides/cluster-upgrade.md)
+
+### **Technical References**
+- **oc-mirror v2 Commands & Troubleshooting:** [../reference/oc-mirror-v2-commands.md](../reference/oc-mirror-v2-commands.md)
+- **Cache Management Guide:** [../reference/cache-management.md](../reference/cache-management.md)
+- **Performance Tuning:** [../reference/oc-mirror-v2-commands.md#performance-tuning](../reference/oc-mirror-v2-commands.md#performance-tuning)
+
+### **Setup & Infrastructure**
+- **AWS Lab Infrastructure:** [../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)
+- **Complete oc-mirror Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)

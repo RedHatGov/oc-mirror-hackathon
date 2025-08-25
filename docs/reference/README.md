@@ -18,6 +18,7 @@ Technical reference materials, command documentation, and project information.
 | **[airgap-testing.md](airgap-testing.md)** | Air-gapped deployment testing and validation | Technical Reference |
 | **[workflows/](workflows/)** | Advanced operational patterns and enterprise procedures | Operational Patterns |
 | **[improvements-summary.md](improvements-summary.md)** | Project improvements and changelog | Project Documentation |
+| **[flow-improvement-checklist.md](flow-improvement-checklist.md)** | Systematic framework for improving flow documentation | Documentation Maintenance |
 
 ## How to Use Reference Documentation
 
@@ -64,6 +65,12 @@ Technical reference materials, command documentation, and project information.
   - Recent changes and enhancements
   - Feature additions and bug fixes
   - Performance improvements
+
+### **Documentation Maintenance**
+- **[flow-improvement-checklist.md](flow-improvement-checklist.md)** - Systematic framework for flow improvements
+  - Content structure standardization guidelines
+  - Technical consistency requirements
+  - Quality validation procedures
 
 ## Quick Navigation
 

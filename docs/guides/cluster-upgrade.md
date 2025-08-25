@@ -96,8 +96,8 @@ cat imageset-config.yaml
 
 **Verify Configuration:**
 ```yaml
-apiVersion: mirror.openshift.io/v2alpha1
 kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v1alpha2
 mirror:
   platform:
     channels:

@@ -57,20 +57,18 @@ Use the same `imageset-config.yaml` as other flows:
 ```yaml
 kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v1alpha2
-archiveSize: 8  # Not used in direct mirroring but required
+# archiveSize: 8 # only used in mirror-to-disk flow 
 mirror:
   platform:
     channels:
     - name: stable-4.19
       minVersion: 4.19.2
-      maxVersion: 4.19.10 
+      maxVersion: 4.19.2 
     graph: true
   operators:
     - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.19
       packages:
         - name: web-terminal
-        - name: cluster-logging
-        - name: compliance-operator
   additionalImages: 
     - name: registry.redhat.io/ubi9/ubi:latest
 ```
@@ -79,6 +77,169 @@ mirror:
 - **archiveSize** - Not used but still required in configuration
 - **graph: true** - Essential for upgrade capabilities
 - **Bandwidth impact** - All content downloads and uploads in real-time
+
+---
+
+## System Preparation
+
+### Prerequisites Setup
+
+Before starting, ensure your Linux system has:
+
+```bash
+# Install required packages (RHEL/CentOS)
+sudo dnf install -y podman git jq vim wget curl
+
+# Verify installations
+podman --version
+git --version
+```
+
+#### Set System Hostname
+```bash
+# Set a proper hostname for your system (replace with your desired hostname)
+sudo hostnamectl set-hostname mirror-registry.example.com
+
+# Verify hostname is set
+hostname
+```
+
+#### Configure Local Firewall
+Configure the firewall to allow inbound access to the registry:
+
+```bash
+# Allow HTTP traffic (port 80)
+sudo firewall-cmd --permanent --add-port=80/tcp
+
+# Allow HTTPS traffic (port 443)  
+sudo firewall-cmd --permanent --add-port=443/tcp
+
+# Allow mirror registry traffic (port 8443)
+sudo firewall-cmd --permanent --add-port=8443/tcp
+
+# Reload firewall to apply changes
+sudo firewall-cmd --reload
+
+# Verify firewall rules
+sudo firewall-cmd --list-ports
+```
+
+> 🛡️ **Security Note:** These firewall rules allow access from any source. In production environments, restrict access to specific IP ranges using `--source=IP_RANGE/CIDR` instead of opening ports globally.
+
+## OpenShift Tools Installation
+
+### 1. Clone Repository
+
+```bash
+# Clone the hackathon repository
+git clone https://github.com/RedHatGov/oc-mirror-hackathon.git
+cd oc-mirror-hackathon
+```
+
+### 2. Download OpenShift Binaries
+
+Execute the simplified collection script:
+
+```bash
+# Edit the OpenShift version if needed (default is "stable")
+# Edit line 14 in collect_ocp: OPENSHIFT_VERSION="4.19.2" 
+
+# Run the collection script
+./collect_ocp
+```
+
+**This script downloads and installs:**
+- 🔧 **oc-mirror** - Content mirroring tool for disconnected OpenShift installations
+- 🛠️ **openshift-install** - OpenShift cluster installer (version-specific)
+- 💻 **oc** - OpenShift command-line interface
+- 🗃️ **mirror-registry** - Local Quay container registry
+- ⚙️ **butane** - Machine configuration generation tool
+
+**For disconnected installations:**
+
+1. Copy the entire `downloads/` directory to your disconnected environment
+2. Run `cd downloads && ./install.sh` to install all tools
+
+### 3. Verify Installation
+
+Confirm all tools are properly installed and accessible:
+
+```bash
+# Check oc-mirror
+oc-mirror help
+
+# Check OpenShift CLI
+oc version
+
+# Check installer (Note: the installer is specific for a release image)
+openshift-install version
+
+# Check butane
+butane --help
+```
+
+## Mirror Registry Setup
+
+### 1. Install Mirror Registry
+
+Navigate to the mirror registry directory and run the installer:
+
+```bash
+# Change to mirror registry directory
+cd ~/oc-mirror-hackathon/downloads/mirror-registry
+
+# Install mirror registry
+./mirror-registry install 
+```
+
+> 📝 **Critical:** When the installation completes, **save the generated registry credentials** (username and password) from the last line of the log output to a secure location. You'll need these for authentication.
+
+### 2. Trust Registry SSL Certificate
+
+Configure the bastion to trust the registry's self-signed certificate:
+
+```bash
+# Copy certificate to system trust store
+sudo cp ~/quay-install/quay-rootCA/rootCA.pem /etc/pki/ca-trust/source/anchors/
+
+# Update certificate trust
+sudo update-ca-trust
+
+# Verify certificate is trusted
+curl -I https://$(hostname):8443
+```
+
+### 3. Configure Authentication
+
+#### Download Red Hat Pull Secret
+1. **Navigate to:** [OpenShift Downloads](https://console.redhat.com/openshift/downloads)
+2. **Copy your pull secret**
+3. **Use the below commands to paste the pull secret in your bastion**
+
+#### Set Up Container Authentication
+```bash
+# Create container config directory
+mkdir -p ~/.config/containers
+
+# Create auth.json file with your Red Hat pull secret
+vi ~/.config/containers/auth.json
+# Paste your pull secret content into this auth.json file
+
+# Login to your mirror registry (use credentials from installation)
+podman login https://$(hostname):8443 \
+  --username init \
+  --password [YOUR_REGISTRY_PASSWORD] \
+  --authfile ~/.config/containers/auth.json
+```
+
+### 4. Verify Registry Access
+
+Test registry access via web browser:
+- **Navigate to your registry URL:** e.g. `https://<YOUR-MIRROR-REGISTRY-HOSTNAME>:8443`
+- **Login with your credentials** from the installation
+- **Verify the registry interface loads**
+
+---
 
 ## Step-by-Step Procedure
 
@@ -100,16 +261,14 @@ oc-mirror --help
 
 ### 2. Execute Direct Mirror-to-Registry
 
-**Option A: Using Tested Script (Recommended)**
 ```bash
-# Execute direct mirroring using tested script
-# Note: This combines mirror-to-disk + upload in one operation
-./oc-mirror-to-disk.sh && ./oc-mirror-from-disk-to-registry.sh
+# Execute direct registry-to-registry mirroring 
+./oc-mirror-to-registry.sh
 ```
 
-**Option B: Single Direct Command**
+**Option: Manual Direct Command**
 ```bash
-# Direct mirroring command (bypasses disk storage)
+# Direct mirroring command (for advanced users)
 oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --cache-dir .cache
 ```
 
@@ -173,64 +332,41 @@ ls -la content/working-dir/cluster-resources/
 
 ## Performance Optimization
 
-### Network Optimization
-```bash
-# Use parallel operations for faster mirroring
-oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --parallel=4
+For comprehensive performance tuning guidance:
+**➡️ [oc-mirror Performance Tuning Reference](../reference/oc-mirror-v2-commands.md#performance-tuning)**
 
-# Configure retry settings for unstable networks
-oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --max-retry=5
-```
+**Quick performance tips for registry-to-registry mirroring:**
+- Use `--parallel-images` flag for faster mirroring
+- Configure `--retry-times` for unstable networks
+- Monitor bandwidth usage during operations
 
-### Cache Management
-```bash
-# Pre-warm cache for faster subsequent operations
-mkdir -p .cache
+---
 
-# Monitor cache efficiency
-du -sh .cache/ && echo "Cache utilization for performance"
-```
+## Cache Management
+
+For comprehensive cache management guidance:
+**➡️ [oc-mirror Cache Management Reference](../reference/cache-management.md)**
+
+**Quick cache tips for registry-to-registry mirroring:**
+- Cache is created automatically at `.cache/`
+- Monitor size: `du -sh .cache/`  
+- Clean if needed: See reference guide for safe cleanup procedures
+
+---
 
 ## Troubleshooting
 
-### Network Issues
+For comprehensive troubleshooting guidance:
+**➡️ [oc-mirror v2 Troubleshooting Reference](../reference/oc-mirror-v2-commands.md#troubleshooting)**  
+**➡️ [Cache-Specific Issues](../reference/cache-management.md#troubleshooting)**
 
-**Connection timeouts:**
+**Quick debugging for mirror-to-registry:**
 ```bash
-# Test Red Hat registry connectivity
-curl -I https://registry.redhat.io/v2/
-
-# Test target registry connectivity
+# Test connectivity to target registry
 curl -k https://$(hostname):8443/health/instance
 
-# Use verbose logging for diagnostics
+# Use verbose logging
 oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --verbose
-```
-
-**Authentication failures:**
-```bash
-# Re-authenticate with Red Hat registries
-podman login registry.redhat.io
-
-# Re-authenticate with target registry
-podman login $(hostname):8443
-
-# Verify pull secret is current
-cat ~/.docker/config.json | jq '.auths'
-```
-
-### Performance Issues
-
-**Slow mirroring:**
-```bash
-# Check bandwidth utilization
-iftop -i eth0
-
-# Monitor registry performance
-podman stats quay-app
-
-# Use fewer parallel operations if system is overloaded
-oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --parallel=2
 ```
 
 ## When to Use This Flow
@@ -251,29 +387,41 @@ oc-mirror -c imageset-config.yaml docker://$(hostname):8443 --v2 --parallel=2
 
 ## Next Steps
 
-After successful mirror-to-registry completion:
+🎉 **Mirror-to-Registry Complete!** Your content is now available at `https://$(hostname):8443`
 
-1. **Use generated IDMS/ITMS files** for OpenShift cluster installation
-2. **Follow [OpenShift installation guide](../guides/openshift-create-cluster.md)** using mirrored content
-3. **Set up automated mirroring** for ongoing content updates
-4. **Configure monitoring** for registry health and content freshness
+### **🚀 Deploy OpenShift Cluster**
 
-## Automation Considerations
+**➡️ [OpenShift Cluster Creation Guide](../guides/openshift-create-cluster.md)**
 
-### Scheduled Mirroring
-```bash
-# Example: Daily content updates via cron
-# 0 2 * * * cd /home/user/oc-mirror-hackathon/oc-mirror-master && ./oc-mirror-to-registry.sh
-```
+This guide will walk you through:
+- ✅ **Using your mirrored registry** as the image source
+- ✅ **Applying generated IDMS/ITMS** cluster resources  
+- ✅ **Installing OpenShift** with disconnected content
+- ✅ **Verifying cluster functionality** with mirrored images
 
-### Integration with CI/CD
-- Trigger mirroring before OpenShift deployments
-- Validate registry content as part of deployment pipelines
-- Monitor content freshness for security updates
+### **🔄 Ongoing Operations**
+
+Once your cluster is deployed:
+- **Set up automated mirroring** for content updates
+- **Configure monitoring** for registry health  
+- **Plan upgrade workflows** using additional mirrored versions
 
 ## References
 
+### **oc-mirror Flow Patterns**
 - **Alternative Flows:** [mirror-to-disk.md](mirror-to-disk.md) and [from-disk-to-registry.md](from-disk-to-registry.md)
-- **Registry Setup:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md#mirror-registry-setup)
-- **Cluster Installation:** [../guides/openshift-create-cluster.md](../guides/openshift-create-cluster.md)
-- **Complete Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)
+- **Image Deletion Flow:** [delete.md](delete.md)
+- **Flow Decision Guide:** [README.md](README.md)
+
+### **Next Steps**
+- **OpenShift Cluster Creation:** [../guides/openshift-create-cluster.md](../guides/openshift-create-cluster.md)
+- **Cluster Upgrade Guide:** [../guides/cluster-upgrade.md](../guides/cluster-upgrade.md)
+
+### **Technical References**
+- **oc-mirror v2 Commands & Troubleshooting:** [../reference/oc-mirror-v2-commands.md](../reference/oc-mirror-v2-commands.md)
+- **Cache Management Guide:** [../reference/cache-management.md](../reference/cache-management.md)
+- **Performance Tuning:** [../reference/oc-mirror-v2-commands.md#performance-tuning](../reference/oc-mirror-v2-commands.md#performance-tuning)
+
+### **Setup & Infrastructure**
+- **AWS Lab Infrastructure:** [../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)
+- **Complete oc-mirror Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)

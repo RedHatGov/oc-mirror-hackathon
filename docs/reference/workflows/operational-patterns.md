@@ -45,23 +45,7 @@ During operational testing, we discovered that oc-mirror v2's behavior differs s
 ```yaml
 kind: ImageSetConfiguration
 apiVersion: mirror.openshift.io/v1alpha2
-archiveSize: 8
-mirror:
-  platform:
-    channels:
-    - name: stable-4.19
-      minVersion: 4.19.2
-      maxVersion: 4.19.2 
-    graph: true
-  additionalImages: 
-    - name: registry.redhat.io/ubi9/ubi:latest
-```
-
-#### Updated Configuration (with web-terminal operator)
-```yaml
-kind: ImageSetConfiguration
-apiVersion: mirror.openshift.io/v1alpha2
-archiveSize: 8
+# archiveSize: 8 # only used in mirror-to-disk flow 
 mirror:
   platform:
     channels:
