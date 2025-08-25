@@ -19,9 +19,16 @@ Essential setup guides to get started
 
 ### **[📖 guides/](guides/)**  
 How-to guides for specific tasks
-- Operator mirroring procedures
-- Image deletion and cleanup
-- Air-gap testing and validation
+- Tool collection and setup procedures
+- OpenShift cluster creation
+- Disconnected cluster upgrades
+
+### **[🚀 flows/](flows/)**
+**oc-mirror --v2 flow patterns** for hackathon participants
+- Mirror-to-disk workflows  
+- From-disk-to-registry deployment
+- Direct registry mirroring
+- Safe content deletion
 
 ### **[⚙️ reference/workflows/](reference/workflows/)**
 Advanced patterns and operational procedures
@@ -40,6 +47,7 @@ Reference materials and command documentation
 |---------------|----------|
 | Set up a new environment | **[setup/](setup/)** |
 | Learn a specific task | **[guides/](guides/)** |
+| Follow oc-mirror flows | **[flows/](flows/)** |
 | Optimize for production | **[reference/workflows/](reference/workflows/)** |
 | Look up command syntax | **[reference/](reference/)** |
 
