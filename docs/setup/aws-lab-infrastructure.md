@@ -223,6 +223,19 @@ dig +short bastion.sandboxXXX.opentlc.com
 dig +short registry.sandboxXXX.opentlc.com
 ```
 
+### 4. Ensure registry instance is in a simulated disconnected environment
+
+1. **Copy the public IP address** from your bastion EC2 instance details
+2. **Navigate to the EC2 console**
+3. **Click 'registry' instance id in the center view**
+4. **Click the 'Security' tab**
+5. **Scroll down to 'Outbound' rules and click the rule (probably launch-wizard-2)**
+6. **Click the security group id in the center view**
+7. **Edit the existing outbound rule to only allow 'All traffic' and paste the bastion EC2 ip address from above**
+8. **The registry instance can now only communicate with the bastion EC2 instance**
+
+> ⚠️ **Important:** Connectivity of registry can be restored by changing the allowed box back to `0.0.0.0/0` 
+
 ## Next Steps
 
 🎉 **Infrastructure Setup Complete!** 
