@@ -1,12 +1,12 @@
 # 🚀 oc-mirror Hackathon Repository
 
-**OpenShift 4.20 oc-mirror v2 Disconnected Mirroring Workshop**
+**OpenShift 4.19 oc-mirror v2 Disconnected Mirroring Workshop**
 
-Welcome to the oc-mirror hackathon! This repository provides everything you need to master **oc-mirror v2** content mirroring for disconnected OpenShift 4.20 environments.
+Welcome to the oc-mirror hackathon! This repository provides everything you need to master **oc-mirror v2** content mirroring for disconnected OpenShift 4.19 environments.
 
 ## 🎯 Hackathon Overview
 
-This hackathon focuses on hands-on experience with **oc-mirror v2** using **OpenShift 4.20.0-ec.5** to learn disconnected mirroring workflows, air-gapped deployments, and enterprise-grade content management patterns.
+This hackathon focuses on hands-on experience with **oc-mirror v2** using **??oc-mirror 4.20.0-ec.5??** to learn disconnected mirroring workflows, air-gapped deployments, and enterprise-grade content management patterns.
 
 ### **🚀 Start Your Hackathon Journey**
 
@@ -54,24 +54,3 @@ Step-by-step operational guides:
 - **[collect-ocp.md](docs/guides/collect-ocp.md)** - Tool collection and setup
 - **[openshift-create-cluster.md](docs/guides/openshift-create-cluster.md)** - Disconnected cluster creation
 - **[cluster-upgrade.md](docs/guides/cluster-upgrade.md)** - Disconnected cluster upgrades
-
-### **📚 [reference/](docs/reference/)**
-Technical references and advanced patterns:
-- **[workflows/](docs/reference/workflows/)** - Enterprise operational patterns  
-- **[oc-mirror-v2-commands.md](docs/reference/oc-mirror-v2-commands.md)** - Complete command reference
-- **[cache-management.md](docs/reference/cache-management.md)** - Storage optimization
-- **[image-deletion.md](docs/reference/image-deletion.md)** - Comprehensive deletion reference
-
-### **🛠️ Tools**
-- **`collect_ocp`** - Simplified tool collection script (in repository root)
-
-## Tools Included
-
-- **oc-mirror** - Content mirroring for disconnected installations
-- **OpenShift installer** - Cluster deployment tools
-- **Mirror registry** - Local Quay container registry
-- **Supporting utilities** - oc, butane, and other required tools
-
----
-
-*Perfect for workshops, training, and enterprise disconnected OpenShift deployments.*
