@@ -20,7 +20,7 @@ Step-by-step guides for specific oc-mirror tasks and scenarios.
 
 Before using these guides, complete the setup process:
 - **[../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)** - Infrastructure setup
-- **[../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)** - Basic oc-mirror workflow
+- **[../reference/oc-mirror-workflow.md](../reference/oc-mirror-workflow.md)** - Basic oc-mirror workflow
 
 ## Related Documentation
 

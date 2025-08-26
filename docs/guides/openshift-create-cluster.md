@@ -534,7 +534,7 @@ oc get network.config/cluster -o yaml
 - [Image Registry Configuration](https://docs.openshift.com/container-platform/latest/registry/)
 
 ### Related Guides
-- [OpenShift Content Mirroring Guide](../setup/oc-mirror-workflow.md)
+- [OpenShift Content Mirroring Guide](../reference/oc-mirror-workflow.md)
 - [Cluster Upgrade Guide](cluster-upgrade.md)
 - [AWS Lab Infrastructure Setup](../setup/aws-lab-infrastructure.md)
 

@@ -189,7 +189,7 @@ graph TB
 
 ### **Infrastructure Setup:**
 - **[AWS Lab Infrastructure](setup/aws-lab-infrastructure.md)** - Two-host setup
-- **[oc-mirror Workflow](setup/oc-mirror-workflow.md)** - Complete workflow (mixed patterns)
+- **[oc-mirror Workflow](reference/oc-mirror-workflow.md)** - Complete workflow (mixed patterns)
 
 ### **Reference Material:**
 - **[airgap-testing.md](reference/airgap-testing.md)** - Testing patterns and procedures

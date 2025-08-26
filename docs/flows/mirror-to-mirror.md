@@ -462,4 +462,4 @@ Once your cluster is deployed:
 
 ### **Setup & Infrastructure**
 - **AWS Lab Infrastructure:** [../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)
-- **Complete oc-mirror Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)
+- **Complete oc-mirror Workflow:** [../reference/oc-mirror-workflow.md](../reference/oc-mirror-workflow.md)

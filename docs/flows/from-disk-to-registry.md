@@ -40,7 +40,7 @@ flowchart LR
 - **Registry Authentication:** Valid credentials for target registry
 
 ### Registry Requirements
-- **Running mirror registry** (see [mirror registry setup](../setup/oc-mirror-workflow.md#mirror-registry-setup))
+- **Running mirror registry** (see [mirror registry setup](../reference/oc-mirror-workflow.md#mirror-registry-setup))
 - **Registry accessible** from disconnected host
 - **Sufficient storage** for mirrored content (50+ GB)
 - **Valid TLS certificates** (or registry configured for HTTP)
@@ -483,4 +483,4 @@ Once your cluster is deployed:
 
 ### **Setup & Infrastructure**
 - **AWS Lab Infrastructure:** [../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)
-- **Complete oc-mirror Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)
+- **Complete oc-mirror Workflow:** [../reference/oc-mirror-workflow.md](../reference/oc-mirror-workflow.md)

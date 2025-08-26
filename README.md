@@ -40,7 +40,7 @@ This hackathon focuses on hands-on experience with **oc-mirror v2** using **Open
 ### **🏗️ [setup/](docs/setup/)**  
 Infrastructure and environment setup:
 - **[aws-lab-infrastructure.md](docs/setup/aws-lab-infrastructure.md)** - Two-host AWS infrastructure
-- **[oc-mirror-workflow.md](docs/setup/oc-mirror-workflow.md)** - Complete oc-mirror workflow
+- **[oc-mirror-workflow.md](docs/reference/oc-mirror-workflow.md)** - Complete oc-mirror workflow
 
 ### **🔄 [flows/](docs/flows/)**
 **oc-mirror --v2 flow patterns** (hackathon core content):

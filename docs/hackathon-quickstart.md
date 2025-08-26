@@ -217,24 +217,6 @@ Each flow has complete step-by-step documentation:
 
 ---
 
-### **📚 Alternative: Comprehensive Tutorial Approach**
-
-**If you prefer detailed step-by-step tutorials over focused flows**
-
-**Prerequisites:** ✅ Infrastructure setup complete
-
-**When to use this:**
-- You want comprehensive background on all concepts
-- You prefer learning through detailed explanations  
-- You need to understand the complete setup process
-
-**Resource:**
-- **[Complete oc-mirror Workflow Tutorial](setup/oc-mirror-workflow.md)** - Comprehensive tutorial covering tools, registry setup, and mirroring concepts
-
-> **💡 Note:** This tutorial provides educational background but you'll still need to choose **Path A** (air-gapped) or **Path B** (semi-connected) for actual implementation.
-
----
-
 ## ✅ Step 4: Validation & Success Criteria
 
 ### **🎯 How to Know You've Succeeded**

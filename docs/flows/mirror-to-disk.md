@@ -456,4 +456,4 @@ For **two-host air-gapped workflow**, your content is ready for the complete dis
 
 ### **Setup & Infrastructure**
 - **AWS Lab Infrastructure:** [../setup/aws-lab-infrastructure.md](../setup/aws-lab-infrastructure.md)
-- **Complete oc-mirror Workflow:** [../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)
+- **Complete oc-mirror Workflow:** [../reference/oc-mirror-workflow.md](../reference/oc-mirror-workflow.md)

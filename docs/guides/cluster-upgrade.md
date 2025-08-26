@@ -395,7 +395,7 @@ oc adm upgrade --to-image=<previous-release-image>
 - [Disconnected Environment Updates](https://docs.redhat.com/en/documentation/openshift_container_platform/4.19/html-single/disconnected_environments/index#updating-disconnected-cluster)
 
 ### Related Guides
-- [oc-mirror Workflow Guide](../setup/oc-mirror-workflow.md)
+- [oc-mirror Workflow Guide](../reference/oc-mirror-workflow.md)
 - [Cache Management Guide](../reference/cache-management.md)
 - [Collect OCP Tools Guide](collect-ocp.md)
 

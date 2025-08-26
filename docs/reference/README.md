@@ -14,6 +14,7 @@ Technical reference materials, command documentation, and project information.
 | **[oc-mirror-v2-commands.md](oc-mirror-v2-commands.md)** | Complete oc-mirror v2 command reference | Technical Reference |
 | **[image-deletion.md](image-deletion.md)** | Comprehensive image deletion reference | Technical Reference |
 | **[cache-management.md](cache-management.md)** | Storage optimization and cache lifecycle management | Technical Reference |
+| **[oc-mirror-workflow.md](oc-mirror-workflow.md)** | Comprehensive oc-mirror workflow tutorial and reference | Technical Reference |
 | **[operator-mirroring.md](operator-mirroring.md)** | Complete operator mirroring reference | Technical Reference |
 | **[airgap-testing.md](airgap-testing.md)** | Air-gapped deployment testing and validation | Technical Reference |
 | **[workflows/](workflows/)** | Advanced operational patterns and enterprise procedures | Operational Patterns |
@@ -40,6 +41,12 @@ Technical reference materials, command documentation, and project information.
   - Storage planning and monitoring strategies
   - Cleanup operations and automation scripts
   - Performance impact analysis and best practices
+
+- **[oc-mirror-workflow.md](oc-mirror-workflow.md)** - Comprehensive oc-mirror workflow tutorial and reference
+  - Complete end-to-end workflow walkthrough
+  - Tool installation and setup procedures
+  - Registry configuration and management
+  - Content mirroring patterns and examples
 
 - **[operator-mirroring.md](operator-mirroring.md)** - Complete operator mirroring reference
   - Operator catalog mirroring techniques

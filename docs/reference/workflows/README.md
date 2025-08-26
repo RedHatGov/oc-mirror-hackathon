@@ -27,5 +27,5 @@ These documents are designed for:
 ## Foundation Knowledge
 
 Start with these if you're new to oc-mirror:
-- **[../setup/oc-mirror-workflow.md](../setup/oc-mirror-workflow.md)** - Basic workflow
+- **[../reference/oc-mirror-workflow.md](../reference/oc-mirror-workflow.md)** - Basic workflow
 - **[../guides/](../guides/)** - Task-specific guides
