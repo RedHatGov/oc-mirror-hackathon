@@ -144,7 +144,7 @@ flowchart TD
     F --> G[Step 2: Transfer Archive<br/>Physical/Network]
     G --> H[Step 3: from-disk-to-registry<br/>Disconnected Host]
     
-    D --> I[mirror-to-registry<br/>Direct Upload]
+    D --> I[mirror-to-mirror<br/>Direct Upload]
     E --> I
     
     H --> J[Optional: delete<br/>Clean up old versions]
@@ -159,7 +159,7 @@ Each flow has complete step-by-step documentation:
 |------|---------|---------------|
 | **mirror-to-disk** | Create portable archives | [flows/mirror-to-disk.md](flows/mirror-to-disk.md) |
 | **from-disk-to-registry** | Deploy archives to registry | [flows/from-disk-to-registry.md](flows/from-disk-to-registry.md) |
-| **mirror-to-registry** | Direct mirroring | [flows/mirror-to-registry.md](flows/mirror-to-registry.md) |
+| **mirror-to-mirror** | Direct mirroring | [flows/mirror-to-mirror.md](flows/mirror-to-mirror.md) |
 | **delete** | Safe content cleanup | [flows/delete.md](flows/delete.md) |
 
 **🔍 For complete flow overview:** [flows/README.md](flows/README.md)
@@ -205,7 +205,7 @@ Each flow has complete step-by-step documentation:
 
 **Workflow:**
 1. **🖥️ On Bastion Host:**
-   - Follow [flows/mirror-to-registry.md](flows/mirror-to-registry.md)
+   - Follow [flows/mirror-to-mirror.md](flows/mirror-to-mirror.md)
    - Direct mirroring from Red Hat to your registry
    - Single-step process with immediate results
 

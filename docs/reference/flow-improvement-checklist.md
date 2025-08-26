@@ -2,7 +2,7 @@
 
 **Systematic framework for improving oc-mirror flow documentation**
 
-This checklist provides a standardized approach for enhancing flow documentation based on the successful transformation of `mirror-to-registry.md` and `mirror-to-disk.md`.
+This checklist provides a standardized approach for enhancing flow documentation based on the successful transformation of `mirror-to-mirror.md` and `mirror-to-disk.md`.
 
 ---
 
@@ -152,7 +152,7 @@ This checklist provides a standardized approach for enhancing flow documentation
 
 ## 📝 Notes
 
-**Created:** Based on successful transformation of `mirror-to-registry.md` and `mirror-to-disk.md`
+**Created:** Based on successful transformation of `mirror-to-mirror.md` and `mirror-to-disk.md`
 **Usage:** Apply systematically to any oc-mirror flow documentation  
 **Maintenance:** Update checklist as patterns evolve
 **Location:** Store in `docs/reference/` for easy access by documentation maintainers

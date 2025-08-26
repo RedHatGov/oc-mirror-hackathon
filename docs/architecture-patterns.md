@@ -125,7 +125,7 @@ graph TB
 
 ### **What Works Today:**
 - ✅ **mirror-to-disk.md** - Works for both patterns (download phase)
-- ✅ **mirror-to-registry.md** - Single-host direct mirroring
+- ✅ **mirror-to-mirror.md** - Single-host direct mirroring
 - ✅ **Infrastructure setup** - AWS two-host configuration
 
 ### **Known Gaps & Assumptions:**
@@ -185,7 +185,7 @@ graph TB
 ### **Current Flows:**
 - **[mirror-to-disk.md](flows/mirror-to-disk.md)** - Download phase (pattern-agnostic)
 - **[from-disk-to-registry.md](flows/from-disk-to-registry.md)** - Upload phase (needs pattern awareness)
-- **[mirror-to-registry.md](flows/mirror-to-registry.md)** - Direct mirroring (single-host only)
+- **[mirror-to-mirror.md](flows/mirror-to-mirror.md)** - Direct mirroring (single-host only)
 
 ### **Infrastructure Setup:**
 - **[AWS Lab Infrastructure](setup/aws-lab-infrastructure.md)** - Two-host setup

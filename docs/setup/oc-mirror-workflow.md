@@ -259,7 +259,7 @@ Transfer mirrored content to your registry:
 
 ```bash
 # Upload content to registry
-./oc-mirror-to-registry.sh
+./oc-mirror-to-mirror.sh
 ```
 
 **This command:**
@@ -542,7 +542,7 @@ df -h && free -h && podman ps
 
 # Mirror content
 cd ~/oc-mirror-hackathon/oc-mirror-master/
-./oc-mirror-to-disk.sh && ./oc-mirror-to-registry.sh
+./oc-mirror-to-disk.sh && ./oc-mirror-to-mirror.sh
 
 # Deploy cluster
 openshift-install create cluster --log-level debug

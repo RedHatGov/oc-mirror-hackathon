@@ -193,7 +193,7 @@ echo "Next steps:"
 echo "1. Add Red Hat pull secret to ~/.config/containers/auth.json"
 echo "2. If using separate tar files, copy them to ~/oc-mirror-master/content/"
 echo "3. Verify registry connectivity: curl -I https://$REGISTRY_URL"
-echo "4. Run mirror-to-registry operation: cd oc-mirror-master && ./oc-mirror-to-registry.sh"
+echo "4. Run mirror-to-mirror operation: cd oc-mirror-master && ./oc-mirror-to-mirror.sh"
 echo ""
 echo "Tools installed in: $TOOLS_DIR"
 echo "Add to current session: export PATH=\$HOME/tools:\$PATH"
@@ -273,7 +273,7 @@ For real-world customers using `archiveSize:`:
 # 1. Main bundle from DVD 1
 # 2. Content tar files from DVDs 2-N
 # 3. Copies content tars to ~/oc-mirror-master/content/
-# 4. Runs oc-mirror-to-registry.sh
+# 4. Runs oc-mirror-to-mirror.sh
 ```
 
 ## Step 4: Air-Gapped System Setup
@@ -363,10 +363,10 @@ Now perform the final mirror operation as the air-gapped user.
 cd ~/oc-mirror-master
 
 # Verify we have the necessary configuration
-ls -la imageset-config.yaml oc-mirror-to-registry.sh
+ls -la imageset-config.yaml oc-mirror-to-mirror.sh
 
-# Execute the mirror-to-registry operation
-./oc-mirror-to-registry.sh
+# Execute the mirror-to-mirror operation
+./oc-mirror-to-mirror.sh
 ```
 
 ### Monitor the Upload Process

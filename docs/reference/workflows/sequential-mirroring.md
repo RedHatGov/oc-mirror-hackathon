@@ -262,7 +262,7 @@ vi imageset-config.yaml  # Change to 4.20.x
 ```bash
 # Standard upload (works with both patterns)
 cd content/seq2-20240818-1430/
-../../oc-mirror-to-registry.sh
+../../oc-mirror-to-mirror.sh
 
 # Each sequence has its own config for reference
 cat imageset-config.yaml  # Shows exactly what was mirrored

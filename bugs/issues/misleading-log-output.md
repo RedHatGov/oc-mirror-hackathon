@@ -9,7 +9,7 @@
 
 **Description of problem:**
 
-oc-mirror v2 log output claims to have mirrored complete image sets when the generated archives actually contain only differential/incremental content since the last run. This misleads customers into believing they can transfer only the latest archive set for air-gapped operations, resulting in failed mirror-to-registry operations.
+oc-mirror v2 log output claims to have mirrored complete image sets when the generated archives actually contain only differential/incremental content since the last run. This misleads customers into believing they can transfer only the latest archive set for air-gapped operations, resulting in failed mirror-to-mirror operations.
 
 **Version-Release number of selected component:**
 - oc-mirror v2 (4.19.0-202507292137.p0.gaa8c685.assembly.stream.el9-aa8c685)

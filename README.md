@@ -46,7 +46,7 @@ Infrastructure and environment setup:
 **oc-mirror --v2 flow patterns** (hackathon core content):
 - **[mirror-to-disk.md](docs/flows/mirror-to-disk.md)** - Create portable archives for air-gapped transfer
 - **[from-disk-to-registry.md](docs/flows/from-disk-to-registry.md)** - Deploy archives to disconnected registries
-- **[mirror-to-registry.md](docs/flows/mirror-to-registry.md)** - Direct mirroring for semi-connected environments  
+- **[mirror-to-mirror.md](docs/flows/mirror-to-mirror.md)** - Direct mirroring for semi-connected environments  
 - **[delete.md](docs/flows/delete.md)** - Safe content cleanup and version management
 
 ### **📖 [guides/](docs/guides/)**

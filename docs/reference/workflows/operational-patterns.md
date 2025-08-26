@@ -160,7 +160,7 @@ rm -rf /previous/content/
 mv content/ /mirror/location/
 
 # 3. Upload complete set to registry
-./oc-mirror-to-registry.sh
+./oc-mirror-to-mirror.sh
 ```
 
 ### Pattern 2: Versioned Archive Strategy

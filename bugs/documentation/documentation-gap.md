@@ -25,7 +25,7 @@ Always - affects all customers attempting operational air-gapped updates
 3. Update configuration (add operators, new versions, etc.)
 4. Perform subsequent mirror operation (creates smaller differential archives)
 5. Attempt to transfer only the new archives to air-gapped environment
-6. Attempt mirror-to-registry operation → FAILS
+6. Attempt mirror-to-mirror operation → FAILS
 
 **Actual results:**
 

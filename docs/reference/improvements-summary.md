@@ -145,7 +145,7 @@ diff content/seq2-20240818-1430/imageset-config.yaml content/seq3-20240918-0930/
 ## 📋 **Backward Compatibility**
 
 - ✅ **Existing scripts unchanged** - `oc-mirror.sh` still works as before
-- ✅ **Registry upload compatible** - `oc-mirror-to-registry.sh` works with new structure  
+- ✅ **Registry upload compatible** - `oc-mirror-to-mirror.sh` works with new structure  
 - ✅ **Air-gapped patterns maintained** - All transfer patterns still valid
 - ✅ **Metadata format extended** - Adds new fields without breaking existing tools
 

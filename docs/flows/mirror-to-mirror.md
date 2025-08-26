@@ -4,7 +4,7 @@
 
 ## Overview
 
-The **mirror-to-registry** flow performs direct registry-to-registry mirroring without intermediate disk storage. This single-step process is ideal for semi-connected environments with reliable network connectivity to both Red Hat registries and your target mirror registry.
+The **mirror-to-mirror** flow performs direct registry-to-registry mirroring without intermediate disk storage. This single-step process is ideal for semi-connected environments with reliable network connectivity to both Red Hat registries and your target mirror registry.
 
 ## Use Cases
 
@@ -288,11 +288,20 @@ podman login $(hostname):8443
 oc-mirror --help
 ```
 
-### 2. Execute Direct Mirror-to-Registry
+### 2. Execute Direct Mirror-to-Mirror
+
+> **⚠️ IMPORTANT:** Before running mirror-to-mirror, you must temporarily **comment out the graph configuration** in your `imageset-config.yaml` file. The direct mirror-to-mirror flow currently has issues when `graph: true` is enabled.
+>
+> ```bash
+> # Edit imageset-config.yaml and comment out the graph line:
+> # graph: true  # <- Comment this out for mirror-to-mirror flow
+> ```
+> 
+> **This is a known limitation that will be addressed in future oc-mirror versions.**
 
 ```bash
 # Execute direct registry-to-registry mirroring 
-./oc-mirror-to-registry.sh
+./oc-mirror-to-mirror.sh
 ```
 
 **Option: Manual Direct Command**
@@ -389,7 +398,7 @@ For comprehensive troubleshooting guidance:
 **➡️ [oc-mirror v2 Troubleshooting Reference](../reference/oc-mirror-v2-commands.md#troubleshooting)**  
 **➡️ [Cache-Specific Issues](../reference/cache-management.md#troubleshooting)**
 
-**Quick debugging for mirror-to-registry:**
+**Quick debugging for mirror-to-mirror:**
 ```bash
 # Test connectivity to target registry
 curl -k https://$(hostname):8443/health/instance

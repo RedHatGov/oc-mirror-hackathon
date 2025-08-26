@@ -468,7 +468,7 @@ Once your cluster is deployed:
 
 ### **oc-mirror Flow Patterns**
 - **Prerequisite Flow:** [mirror-to-disk.md](mirror-to-disk.md)
-- **Alternative Flow:** [mirror-to-registry.md](mirror-to-registry.md) (semi-connected)
+- **Alternative Flow:** [mirror-to-mirror.md](mirror-to-mirror.md) (semi-connected)
 - **Image Deletion:** [delete.md](delete.md)
 - **Flow Decision Guide:** [README.md](README.md)
 
