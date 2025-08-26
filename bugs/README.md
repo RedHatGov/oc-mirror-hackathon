@@ -77,7 +77,7 @@ Use this exact format when creating your JIRA bug report:
 | Participant | JIRA Bug ID | Title | Priority | Component | Status | Notes |
 |-------------|-------------|-------|----------|-----------|---------|--------|
 | [Your Name] | [OCPBUGS-XXXXX](https://issues.redhat.com/browse/OCPBUGS-XXXXX) | Brief title | Major | oc-mirror | Open | Brief description |
-| | | | | | | |
+| Joseph McDade | [OCPBUGS-60926](https://issues.redhat.com/projects/OCPBUGS/issues/OCPBUGS-60926) | Registry credentials are not checked prior to unpack | | oc-mirror |Open | When performing disk to mirror, oc-mirror unpacks the tar without attempting to verify the registry credentials first |
 | | | | | | | |
 | | | | | | | |
 | | | | | | | |
