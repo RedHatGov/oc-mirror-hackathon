@@ -217,23 +217,21 @@ Each flow has complete step-by-step documentation:
 
 ---
 
-### **🔧 Path C: Single-Host Complete Workflow**
+### **📚 Alternative: Comprehensive Tutorial Approach**
 
-**Traditional approach using existing documentation**
+**If you prefer detailed step-by-step tutorials over focused flows**
 
-**Prerequisites:** ✅ Single-host infrastructure setup complete
+**Prerequisites:** ✅ Infrastructure setup complete
 
-**Workflow:**
-1. **🖥️ On Bastion Host:**
-   - Follow [setup/oc-mirror-workflow.md](setup/oc-mirror-workflow.md)
-   - Complete setup including tools, registry, and mirroring
-   - All-in-one approach on single host
+**When to use this:**
+- You want comprehensive background on all concepts
+- You prefer learning through detailed explanations  
+- You need to understand the complete setup process
 
-**Why choose this path:**
-- ✅ **Comprehensive** - covers complete setup
-- ✅ **Proven** - extensively tested approach  
-- ✅ **Educational** - covers all concepts in detail
-- ✅ **Self-contained** - everything on one host
+**Resource:**
+- **[Complete oc-mirror Workflow Tutorial](setup/oc-mirror-workflow.md)** - Comprehensive tutorial covering tools, registry setup, and mirroring concepts
+
+> **💡 Note:** This tutorial provides educational background but you'll still need to choose **Path A** (air-gapped) or **Path B** (semi-connected) for actual implementation.
 
 ---
 
@@ -277,11 +275,6 @@ Each flow has complete step-by-step documentation:
 - ✅ Direct mirroring completed without errors
 - ✅ Content immediately available in registry
 - ✅ Network connectivity stable throughout process
-
-**Path C (Single-Host):**
-- ✅ Complete oc-mirror workflow functional
-- ✅ All components running on single host
-- ✅ End-to-end validation successful
 
 ### **🏆 Hackathon Goals Achieved:**
 
