@@ -258,18 +258,11 @@ Each flow has complete step-by-step documentation:
 - ✅ Content immediately available in registry
 - ✅ Network connectivity stable throughout process
 
-### **🏆 Hackathon Goals Achieved:**
-
-- 🎯 **Infrastructure Mastery** - AWS multi-host setup
-- 🎯 **oc-mirror Expertise** - Understanding of all flow patterns
-- 🎯 **Air-Gap Simulation** - Real-world enterprise scenario
-- 🎯 **Production Readiness** - Skills applicable to enterprise deployments
-
 ---
 
-## 📚 Additional Resources
+## 📚 Next Steps
 
-### **🔗 Next Steps After Success:**
+### **🔗 Next Steps After The Basics:**
 
 1. **Deploy OpenShift Cluster:**
    - [guides/openshift-create-cluster.md](guides/openshift-create-cluster.md)
@@ -279,6 +272,22 @@ Each flow has complete step-by-step documentation:
 
 3. **Content Management:**
    - [flows/delete.md](flows/delete.md) - Clean up old versions
+
+4. **Advanced Operator Management:**
+   - Add and remove operators using mirrored catalogs
+   - Test custom operator deployments in disconnected environments
+
+5. **Production ImageSet Configuration:**
+   - Design common ISC files for enterprise OpenShift deployments
+   - Create reusable configuration patterns for different scenarios
+
+6. **Reference Documentation Enhancement:**
+   - Document and discuss initial ideas under [reference/](reference/) documentation
+   - Contribute to advanced operational patterns and troubleshooting guides
+
+7. **Documentation & Issue Tracking:**
+   - Document your findings, issues, and RFEs from hackathon experience
+   - Contribute back to the community knowledge base
 
 ### **🆘 Troubleshooting & Support:**
 
