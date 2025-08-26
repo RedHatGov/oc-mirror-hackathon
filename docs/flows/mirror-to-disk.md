@@ -424,9 +424,9 @@ tar -tzf openshift-content-$(date +%Y%m%d).tar.gz | head -10
 
 ### **🚀 Deploy to Disconnected Environment**
 
-**➡️ [from-disk-to-registry.md](from-disk-to-registry.md)**
+**➡️ [disk-to-mirror.md](disk-to-mirror.md)**
 
-Transfer your archive to the disconnected environment, then follow the from-disk-to-registry flow to:
+Transfer your archive to the disconnected environment, then follow the disk-to-mirror flow to:
 - ✅ **Extract archived content** on the registry node
 - ✅ **Upload to target registry** using mirrored content  
 - ✅ **Generate IDMS/ITMS** for cluster configuration
@@ -439,13 +439,13 @@ For **two-host air-gapped workflow**, your content is ready for the complete dis
 ## References
 
 ### **oc-mirror Flow Patterns**
-- **Next Flow:** [from-disk-to-registry.md](from-disk-to-registry.md)
+- **Next Flow:** [disk-to-mirror.md](disk-to-mirror.md)
 - **Alternative Flow:** [mirror-to-mirror.md](mirror-to-mirror.md) (semi-connected)
 - **Image Deletion:** [delete.md](delete.md)
 - **Flow Decision Guide:** [README.md](README.md)
 
 ### **Next Steps**
-- **Registry Deployment:** [from-disk-to-registry.md](from-disk-to-registry.md)
+- **Registry Deployment:** [disk-to-mirror.md](disk-to-mirror.md)
 - **OpenShift Cluster Creation:** [../guides/openshift-create-cluster.md](../guides/openshift-create-cluster.md)
 - **Cluster Upgrade Guide:** [../guides/cluster-upgrade.md](../guides/cluster-upgrade.md)
 

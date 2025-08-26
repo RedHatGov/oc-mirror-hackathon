@@ -142,7 +142,7 @@ flowchart TD
     
     C --> F[Step 1: mirror-to-disk<br/>Connected Host]
     F --> G[Step 2: Transfer Archive<br/>Physical/Network]
-    G --> H[Step 3: from-disk-to-registry<br/>Disconnected Host]
+    G --> H[Step 3: disk-to-mirror<br/>Disconnected Host]
     
     D --> I[mirror-to-mirror<br/>Direct Upload]
     E --> I
@@ -158,7 +158,7 @@ Each flow has complete step-by-step documentation:
 | Flow | Purpose | Documentation |
 |------|---------|---------------|
 | **mirror-to-disk** | Create portable archives | [flows/mirror-to-disk.md](flows/mirror-to-disk.md) |
-| **from-disk-to-registry** | Deploy archives to registry | [flows/from-disk-to-registry.md](flows/from-disk-to-registry.md) |
+| **disk-to-mirror** | Deploy archives to registry | [flows/disk-to-mirror.md](flows/disk-to-mirror.md) |
 | **mirror-to-mirror** | Direct mirroring | [flows/mirror-to-mirror.md](flows/mirror-to-mirror.md) |
 | **delete** | Safe content cleanup | [flows/delete.md](flows/delete.md) |
 
@@ -185,7 +185,7 @@ Each flow has complete step-by-step documentation:
    - Simulates air-gap transfer (physical media, approved network)
 
 3. **🖥️ On Registry Host (Disconnected):**
-   - Follow [flows/from-disk-to-registry.md](flows/from-disk-to-registry.md)
+   - Follow [flows/disk-to-mirror.md](flows/disk-to-mirror.md)
    - Deploys content to local mirror registry
    - Simulates the "disconnected side" of your organization
 

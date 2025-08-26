@@ -33,7 +33,7 @@ graph TB
         A[Internet Access]
         B[mirror-to-disk]  
         C[Local Registry]
-        D[from-disk-to-registry]
+        D[disk-to-mirror]
         E[Registry Content]
     end
     
@@ -46,7 +46,7 @@ graph TB
 **Characteristics:**
 - **One host** handles both download and registry functions
 - **Simplified networking** - no content transfer between hosts
-- **Direct process** - mirror-to-disk → from-disk-to-registry on same host
+- **Direct process** - mirror-to-disk → disk-to-mirror on same host
 - **Registry accessible** from external networks for cluster installation
 
 ### **Pattern B: Two-Host (Registry on Registry Node)**
@@ -65,7 +65,7 @@ graph TB
     
     subgraph "Registry Host (Disconnected)"
         E[Archive Extraction]
-        F[from-disk-to-registry]
+        F[disk-to-mirror]
         G[Registry Content]
     end
     
@@ -129,10 +129,10 @@ graph TB
 - ✅ **Infrastructure setup** - AWS two-host configuration
 
 ### **Known Gaps & Assumptions:**
-- ⚠️ **from-disk-to-registry.md** - Currently assumes Pattern B (two-host)
+- ⚠️ **disk-to-mirror.md** - Currently assumes Pattern B (two-host)
 - ⚠️ **Flow decision matrix** - Doesn't clearly distinguish patterns
 - ⚠️ **Architecture guidance** - Buried in individual flows
-- ⚠️ **Single-host procedures** - Incomplete in from-disk-to-registry flow
+- ⚠️ **Single-host procedures** - Incomplete in disk-to-mirror flow
 
 ### **Incomplete/Reference Material:**
 - 📋 **airgap-testing.md** - Contains patterns but needs organization
@@ -144,7 +144,7 @@ graph TB
 ## 🛠️ Development Roadmap
 
 ### **High Priority (Immediate)**
-- [ ] **Enhance from-disk-to-registry.md** - Support both architecture patterns
+- [ ] **Enhance disk-to-mirror.md** - Support both architecture patterns
 - [ ] **Create architecture decision section** - Clear pattern selection guidance
 - [ ] **Update flow README** - Include pattern considerations in decision matrix
 - [ ] **Test single-host procedures** - Validate simplified workflow
@@ -169,8 +169,8 @@ graph TB
 1. **Read this document first** before selecting flows
 2. **Choose your pattern** based on decision guidance above
 3. **Follow appropriate flows** with pattern in mind:
-   - Single-host: mirror-to-disk → from-disk-to-registry (same host)
-   - Two-host: mirror-to-disk (bastion) → transfer → from-disk-to-registry (registry host)
+   - Single-host: mirror-to-disk → disk-to-mirror (same host)
+   - Two-host: mirror-to-disk (bastion) → transfer → disk-to-mirror (registry host)
 
 ### **For Contributors:**
 1. **Avoid pattern assumptions** in flow documentation
@@ -184,7 +184,7 @@ graph TB
 
 ### **Current Flows:**
 - **[mirror-to-disk.md](flows/mirror-to-disk.md)** - Download phase (pattern-agnostic)
-- **[from-disk-to-registry.md](flows/from-disk-to-registry.md)** - Upload phase (needs pattern awareness)
+- **[disk-to-mirror.md](flows/disk-to-mirror.md)** - Upload phase (needs pattern awareness)
 - **[mirror-to-mirror.md](flows/mirror-to-mirror.md)** - Direct mirroring (single-host only)
 
 ### **Infrastructure Setup:**

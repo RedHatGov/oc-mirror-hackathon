@@ -25,7 +25,7 @@ This guide covers the AWS-specific infrastructure setup needed for the oc-mirror
 ### What You'll Build
 - 🌐 **AWS Demo Environment**: Sandbox environment with credentials
 - 🖥️ **Bastion Host**: RHEL 9 EC2 instance for mirror-to-disk operations (t2.large, 1TB storage)
-- 🖥️ **Registry Host**: RHEL 9 EC2 instance for from-disk-to-registry operations (t2.large, 1TB storage)
+- 🖥️ **Registry Host**: RHEL 9 EC2 instance for disk-to-mirror operations (t2.large, 1TB storage)
 - 🔗 **DNS Records**: Route53 A records for both bastion and registry host access
 - 🛡️ **Security Groups**: Firewall rules for mirror registry access (port 8443)
 

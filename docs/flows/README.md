@@ -9,7 +9,7 @@ This directory contains the core **flow patterns** for oc-mirror --v2, designed 
 | Flow | Environment | Use Case | Complexity |
 |------|-------------|----------|------------|
 | **[mirror-to-disk.md](mirror-to-disk.md)** | Connected | Create portable archives | ⭐⭐ |
-| **[from-disk-to-registry.md](from-disk-to-registry.md)** | Disconnected | Deploy from archives | ⭐⭐ |
+| **[disk-to-mirror.md](disk-to-mirror.md)** | Disconnected | Deploy from archives | ⭐⭐ |
 | **[mirror-to-mirror.md](mirror-to-mirror.md)** | Semi-connected | Direct mirroring | ⭐ |
 | **[delete.md](delete.md)** | Any | Safe content cleanup | ⭐⭐⭐ |
 
@@ -18,7 +18,7 @@ This directory contains the core **flow patterns** for oc-mirror --v2, designed 
 ### **Air-Gapped Environment (No Internet)**
 1. **Connected Phase:** Use [mirror-to-disk.md](mirror-to-disk.md)
 2. **Transfer Phase:** Move archives to disconnected environment  
-3. **Disconnected Phase:** Use [from-disk-to-registry.md](from-disk-to-registry.md)
+3. **Disconnected Phase:** Use [disk-to-mirror.md](disk-to-mirror.md)
 
 ### **Semi-Connected Environment (Limited Internet)**
 - **Direct Mirroring:** Use [mirror-to-mirror.md](mirror-to-mirror.md)
@@ -37,7 +37,7 @@ flowchart TD
     
     C --> F[mirror-to-disk]
     F --> G[Transfer Archives]
-    G --> H[from-disk-to-registry]
+    G --> H[disk-to-mirror]
     
     D --> I[mirror-to-mirror]
     E --> J[mirror-to-mirror]
@@ -80,7 +80,7 @@ Flow development progress for the oc-mirror hackathon:
 
 - **✅ delete.md** - Complete with tested procedures
 - **✅ mirror-to-disk.md** - Complete with tested procedures from oc-mirror-workflow
-- **✅ from-disk-to-registry.md** - Complete with tested procedures from oc-mirror-workflow  
+- **✅ disk-to-mirror.md** - Complete with tested procedures from oc-mirror-workflow  
 - **✅ mirror-to-mirror.md** - Complete with tested procedures and decision guidance
 
 **Status:** All core flows complete with comprehensive, tested procedures that hackathon participants can follow successfully.

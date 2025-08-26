@@ -500,7 +500,7 @@ If critical versions were accidentally deleted:
 # Re-mirror required content immediately
 cd oc-mirror-master/
 ./oc-mirror-to-disk.sh      # Mirror to disk
-./oc-mirror-from-disk-to-registry.sh  # Upload to registry
+./oc-mirror-disk-to-mirror.sh  # Upload to registry
 ```
 
 ## References

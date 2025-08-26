@@ -125,9 +125,9 @@ echo "🔄 Using mirror-to-mirror pattern for upgrade content..."
 **Option B: Disk-Based Mirroring (Air-Gapped)**  
 ```bash
 # Follow the two-step disk pattern for air-gapped updates  
-echo "📦 Using mirror-to-disk → from-disk-to-registry pattern..."
+echo "📦 Using mirror-to-disk → disk-to-mirror pattern..."
 ```
-**➡️ [Follow: mirror-to-disk.md](../flows/mirror-to-disk.md)** → **[from-disk-to-registry.md](../flows/from-disk-to-registry.md)** - Use this for air-gapped environments
+**➡️ [Follow: mirror-to-disk.md](../flows/mirror-to-disk.md)** → **[disk-to-mirror.md](../flows/disk-to-mirror.md)** - Use this for air-gapped environments
 
 ### 4. Verify Content Update
 

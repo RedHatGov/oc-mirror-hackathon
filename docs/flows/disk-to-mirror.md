@@ -4,7 +4,7 @@
 
 ## Overview
 
-The **from-disk-to-registry** flow uploads previously mirrored content from portable archives to a target registry in a disconnected environment. This is the second stage of the air-gapped mirroring process, deploying content that was packaged using the [mirror-to-disk.md](mirror-to-disk.md) flow.
+The **disk-to-mirror** flow uploads previously mirrored content from portable archives to a target registry in a disconnected environment. This is the second stage of the air-gapped mirroring process, deploying content that was packaged using the [mirror-to-disk.md](mirror-to-disk.md) flow.
 
 ## Use Cases
 
@@ -298,7 +298,7 @@ curl -k https://$(hostname):8443/health/instance
 
 ```bash
 # Upload content to registry using tested script
-./oc-mirror-from-disk-to-registry.sh
+./oc-mirror-disk-to-mirror.sh
 ```
 
 **This command:**
@@ -387,7 +387,7 @@ cp content/working-dir/cluster-resources/itms-oc-mirror.yaml ~/openshift-install
 For comprehensive performance tuning guidance:
 **➡️ [oc-mirror Performance Tuning Reference](../reference/oc-mirror-v2-commands.md#performance-tuning)**
 
-**Quick performance tips for from-disk-to-registry:**
+**Quick performance tips for disk-to-mirror:**
 - Monitor registry storage usage during uploads
 - Schedule uploads during off-peak hours when possible  
 - Use `--parallel-images` for faster uploads if network allows
@@ -399,7 +399,7 @@ For comprehensive performance tuning guidance:
 For comprehensive cache management guidance:
 **➡️ [oc-mirror Cache Management Reference](../reference/cache-management.md)**
 
-**Quick cache tips for from-disk-to-registry:**
+**Quick cache tips for disk-to-mirror:**
 - Cache is recreated fresh on registry node (not transferred)
 - Monitor size: `du -sh .cache/`
 - Cache improves performance for subsequent operations
@@ -413,7 +413,7 @@ For comprehensive troubleshooting guidance:
 **➡️ [oc-mirror v2 Troubleshooting Reference](../reference/oc-mirror-v2-commands.md#troubleshooting)**  
 **➡️ [Cache-Specific Issues](../reference/cache-management.md#troubleshooting)**
 
-**Quick debugging for from-disk-to-registry:**
+**Quick debugging for disk-to-mirror:**
 ```bash
 # Test registry connectivity
 curl -k https://$(hostname):8443/health/instance
@@ -461,7 +461,7 @@ This guide will walk you through:
 
 Once your cluster is deployed:
 - **Set up monitoring** for registry health and storage
-- **Plan content updates** using additional mirror-to-disk → from-disk-to-registry cycles
+- **Plan content updates** using additional mirror-to-disk → disk-to-mirror cycles
 - **Configure backup procedures** for registry content
 
 ## References
