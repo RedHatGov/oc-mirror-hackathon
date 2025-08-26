@@ -113,24 +113,32 @@ mirror:
 
 ### 3. Mirror Updated Content
 
+**Use the same mirroring pattern you used to initially hydrate your registry:**
+
+**Option A: Direct Registry Mirroring (Semi-Connected)**
 ```bash
-# Mirror latest content to disk
-echo "📥 Mirroring updated OpenShift content..."
-./oc-mirror-to-disk.sh
+# Follow the mirror-to-mirror flow for direct updates
+echo "🔄 Using mirror-to-mirror pattern for upgrade content..."
 ```
+**➡️ [Follow: mirror-to-mirror.md](../flows/mirror-to-mirror.md)** - Use this if you initially used direct registry mirroring
 
-### 4. Upload to Registry
-
+**Option B: Disk-Based Mirroring (Air-Gapped)**  
 ```bash
-# Upload mirrored content to registry
-echo "🚀 Uploading to mirror registry..."
-./oc-mirror-from-disk-to-registry.sh
+# Follow the two-step disk pattern for air-gapped updates  
+echo "📦 Using mirror-to-disk → from-disk-to-registry pattern..."
 ```
+**➡️ [Follow: mirror-to-disk.md](../flows/mirror-to-disk.md)** → **[from-disk-to-registry.md](../flows/from-disk-to-registry.md)** - Use this for air-gapped environments
 
-**Verify Upload Success:**
+### 4. Verify Content Update
+
+**Confirm upgrade content is available:**
 ```bash
-# Check content was uploaded successfully
-ls -la content/working-dir/cluster-resources/
+# Check content was updated successfully  
+ls -la oc-mirror-master/content/working-dir/cluster-resources/
+
+# Verify new IDMS/ITMS were generated
+ls -la oc-mirror-master/content/working-dir/cluster-resources/idms-*.yaml
+ls -la oc-mirror-master/content/working-dir/cluster-resources/itms-*.yaml
 ```
 
 ## Cluster Preparation
@@ -395,6 +403,18 @@ oc adm upgrade --to-image=<previous-release-image>
 - Red Hat Customer Portal: [Access Portal](https://access.redhat.com/)
 - OpenShift Documentation: [docs.openshift.com](https://docs.openshift.com/)
 - Community Support: [OpenShift Commons](https://commons.openshift.org/)
+
+## Next Steps
+
+🎉 **Cluster Upgrade Complete!**
+
+Your OpenShift cluster has been successfully upgraded using mirrored content. You now have old content (4.19.2) that can be safely cleaned up.
+
+### **🗑️ Clean Up Old Content**
+
+**➡️ [Image Deletion Flow](../flows/delete.md)** - Remove old versions (4.19.2) now that 4.19.7 is confirmed working
+
+This completes the full oc-mirror lifecycle: **Mirror → Deploy → Upgrade → Clean Up**
 
 ---
 

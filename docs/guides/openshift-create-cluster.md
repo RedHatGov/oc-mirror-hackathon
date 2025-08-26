@@ -556,3 +556,21 @@ After completing this guide, you should have:
 - [ ] ✅ **Documented cluster access** credentials and URLs
 
 Your disconnected OpenShift cluster is now ready for production workloads!
+
+## Next Steps
+
+🎉 **Cluster Deployment Complete!**
+
+Your OpenShift cluster is successfully running with mirrored content. Continue your oc-mirror journey with ongoing operations.
+
+### **🔄 Test Cluster Upgrades**
+
+**➡️ [Cluster Upgrade Guide](cluster-upgrade.md)** - Test cluster upgrades with your mirrored content
+
+This guide will help you:
+- ✅ **Mirror upgrade content** using your established flow pattern
+- ✅ **Perform safe cluster upgrades** with mirrored images  
+- ✅ **Validate upgrade success** in disconnected environments
+- ✅ **Complete the full lifecycle** with content cleanup
+
+**Master the complete oc-mirror workflow:** Deploy → Upgrade → Manage
