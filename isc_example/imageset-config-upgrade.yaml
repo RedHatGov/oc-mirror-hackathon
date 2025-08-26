@@ -1,0 +1,175 @@
+#Example of upgrade content from OCP v4.16 to OCP v4.18 with ODF and Gitlab installed
+kind: ImageSetConfiguration
+apiVersion: mirror.openshift.io/v2alpha1
+archiveSize: 48
+mirror:
+  operators:
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.17
+      packages:
+        - name: ocs-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: odf-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: mcg-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: recipe
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.9-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: odr-cluster-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: odr-hub-operator
+          channels:
+            - name: stable-4.16
+              minVersion: 4.16.5-rhodf
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+        - name: local-storage-operator
+          channels:
+            - name: stable
+              minVersion: 4.17.0-202409111134
+    - catalog: registry.redhat.io/redhat/redhat-operator-index:v4.18
+      packages:
+        - name: ocs-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odf-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: mcg-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odf-csi-addons-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: ocs-client-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odf-prometheus-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: recipe
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: rook-ceph-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: cephcsi-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odf-dependencies
+          channels:
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odr-cluster-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: odr-hub-operator
+          channels:
+            - name: stable-4.17
+              minVersion: 4.17.0-rhodf
+            - name: stable-4.18
+              minVersion: 4.18.0-rhodf
+        - name: local-storage-operator
+          channels:
+            - name: stable
+              minVersion: 4.18.0-202502040032
+    - catalog: registry.redhat.io/redhat/certified-operator-index:v4.17
+      packages:
+        - name: gitlab-operator-kubernetes
+          channels:
+            - name: stable
+              minVersion: 2.1.2 
+        - name: gitlab-runner-operator
+          channels:
+            - name: stable
+              minVersion: 1.37.1
+    - catalog: registry.redhat.io/redhat/certified-operator-index:v4.18
+      packages:
+        - name: gitlab-operator-kubernetes
+          channels:
+            - name: stable
+              minVersion: 2.1.2 
+        - name: gitlab-runner-operator
+          channels:
+            - name: stable
+              minVersion: 1.38.0
+
