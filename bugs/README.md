@@ -77,6 +77,7 @@ Use this exact format when creating your JIRA bug report:
 | Participant | JIRA Bug ID | Title | Priority | Component | Status | Notes |
 |-------------|-------------|-------|----------|-----------|---------|--------|
 | [Your Name] | [OCPBUGS-XXXXX](https://issues.redhat.com/browse/OCPBUGS-XXXXX) | Brief title | Major | oc-mirror | Open | Brief description |
+| Kevin O'Donnell | [OCPBUGS-60928](https://issues.redhat.com/browse/OCPBUGS-60928) | oc-mirror --v2 m2m fails when graph is in imageset-config.yaml | Major | oc-mirror | Open | 401 Unauthorized error accessing graph-image |
 | | | | | | | |
 | | | | | | | |
 | | | | | | | |
