@@ -83,7 +83,7 @@ Use this exact format when creating your JIRA bug report:
 | Mark Clemente | [OCPBUGS-60955](https://issues.redhat.com/browse/OCPBUGS-60955)|oc-mirror should create a unique name for mirror.tar file |Unidentified | oc-mirror| Open| |
 | Keith Jackson | [OCPBUGS-60956](https://issues.redhat.com/browse/OCPBUGS-60956) | oc-mirror v2 overwrites delete-imageset-config.yaml and delete-images.yaml | Normal | oc-mirror | Open | |
 |Dan Clark |[OCPBUGS-60903](https://issues.redhat.com/browse/OCPBUGS-60903) |oc-mirror v2 version command should output release version and not git commit hash | Unidentified|oc-mirror |Open | |
-
+| Mark Clemente | [RFE-8074]([https://issues.redhat.com/browse/OCPBUGS-60955](https://issues.redhat.com/browse/RFE-8074)|oc-mirror should do an integrity check after moved to disconnected environment |Major | oc-mirror| Open| |
 
 ---
 
