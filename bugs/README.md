@@ -82,7 +82,7 @@ Use this exact format when creating your JIRA bug report:
 |Keith Jackson | [OCPBUGS-60917](https://issues.redhat.com/browse/OCPBUGS-60917) | Running oc-mirror as root affects operator index image creation | Normal | oc-mirror | Open | |
 | Mark Clemente | [OCPBUGS-60955](https://issues.redhat.com/browse/OCPBUGS-60955)|oc-mirror should create a unique name for mirror.tar file |Unidentified | oc-mirror| Open| |
 | Keith Jackson | [OCPBUGS-60956](https://issues.redhat.com/browse/OCPBUGS-60956) | oc-mirror v2 overwrites delete-imageset-config.yaml and delete-images.yaml | Nromal | oc-mirror | Open | |
-
+|Dan Clark |[OCPBUGS-60903](https://issues.redhat.com/browse/OCPBUGS-60903) |oc-mirror v2 version command should output release version and not git commit hash | Unidentified|oc-mirror |Open | |
 
 
 ---
