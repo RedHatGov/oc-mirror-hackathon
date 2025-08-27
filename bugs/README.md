@@ -78,7 +78,7 @@ Use this exact format when creating your JIRA bug report:
 |-------------|-------------|-------|----------|-----------|---------|--------|
 | [Your Name] | [OCPBUGS-XXXXX](https://issues.redhat.com/browse/OCPBUGS-XXXXX) | Brief title | Major | oc-mirror | Open | Brief description |
 | Kevin O'Donnell | [OCPBUGS-60928](https://issues.redhat.com/browse/OCPBUGS-60928) | oc-mirror --v2 m2m fails when graph is in imageset-config.yaml | Major | oc-mirror | Open | 401 Unauthorized error accessing graph-image |
-| | | | | | | |
+| Mark Clemente | OCPBUGS-60929 (https://issues.redhat.com/browse/OCPBUGS-60929?filter=-6&jql=text%20~%20%22oc-mirror%22%20AND%20created%20%3E%3D%20-1w%20order%20by%20created%20DESC)| oc-mirror creates tar file even after errors from image pull| Normal | oc-mirror | Open | |
 | | | | | | | |
 | | | | | | | |
 | | | | | | | |
