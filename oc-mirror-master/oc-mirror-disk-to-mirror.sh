@@ -2,6 +2,8 @@
 # Upload mirrored content to registry
 # Cache will be created fresh on this host - no cache transfer needed!
 
+set -e
+
 echo "🚀 Uploading mirrored content to registry..."
 echo "📊 Content size: $(du -sh content/ 2>/dev/null | cut -f1 || echo 'Unknown')"
 echo "📋 All necessary metadata is in content/working-dir/"

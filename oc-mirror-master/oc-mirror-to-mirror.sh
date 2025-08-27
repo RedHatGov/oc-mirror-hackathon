@@ -2,6 +2,8 @@
 # Mirror content directly from registry to registry (semi-connected flow)
 # Bypasses disk storage - direct registry-to-registry mirroring
 
+set -e
+
 echo "🔄 Mirroring content directly to registry..."
 echo "🎯 Target: docker://$(hostname):8443 (direct registry)"
 echo "📋 Config: imageset-config.yaml"

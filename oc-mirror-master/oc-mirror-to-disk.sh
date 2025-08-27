@@ -2,6 +2,8 @@
 # Mirror content from registry to local disk storage
 # Creates content/ directory with all images and metadata
 
+set -e
+
 echo "📥 Mirroring content from registry to disk..."
 echo "🎯 Target: file://content (local disk storage)"
 echo "📋 Config: imageset-config.yaml"

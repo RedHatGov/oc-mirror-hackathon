@@ -2,6 +2,8 @@
 # Generate deletion plan for old OpenShift images
 # Creates reviewable deletion plan without executing any deletions (SAFE!)
 
+set -e
+
 echo "🗑️ Generating deletion plan for old images..."
 echo "🎯 Target registry: $(hostname):8443"
 echo "📋 Config: imageset-delete.yaml"

@@ -2,6 +2,8 @@
 # Execute deletion of old OpenShift images using generated deletion plan
 # WARNING: This will permanently delete images from your registry!
 
+set -e
+
 echo "🚨 DANGER: About to execute image deletion!"
 echo "🎯 Target registry: $(hostname):8443"
 echo "📄 Deletion plan: content/working-dir/delete/delete-images.yaml"

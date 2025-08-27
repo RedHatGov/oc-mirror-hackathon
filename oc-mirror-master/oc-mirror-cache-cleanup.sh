@@ -2,6 +2,8 @@
 # Clean up oc-mirror cache directory to reclaim storage space
 # Use this after delete operations if storage space is needed
 
+set -e
+
 echo "🗂️  oc-mirror Cache Cleanup Utility"
 echo "🎯 Target cache directory: .cache/"
 echo ""
