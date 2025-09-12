@@ -1,5 +1,10 @@
 # 🚀 oc-mirror Hackathon Repository
 
+**[This repo will be removed. The instructions and guides have been moved to](https://github.com/RedHatGov/ocp)**
+
+- **[oc-mirror Delivery Plan by Release](https://issues.redhat.com/secure/Dashboard.jspa?selectPageId=12365011)** - Release planning and roadmap
+
+
 **OpenShift 4.19 oc-mirror v2 Disconnected Mirroring Workshop**
 
 Welcome to the oc-mirror hackathon! This repository provides everything you need to master **oc-mirror v2** content mirroring for disconnected OpenShift 4.19 environments.
